@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    ff_gen_drv.c 
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    21-April-2017
+  * @version V2.0.1
+  * @date    10-July-2017
   * @brief   FatFs generic low level driver.
   ******************************************************************************
   * @attention
@@ -63,7 +63,7 @@ Disk_drvTypeDef disk = {{0},{0},{0},0};
   * @param  drv: pointer to the disk IO Driver structure
   * @param  path: pointer to the logical drive path 
   * @param  lun : only used for USB Key Disk to add multi-lun management
-            else the paramter must be equal to 0
+            else the parameter must be equal to 0
   * @retval Returns 0 in case of success, otherwise 1.
   */
 uint8_t FATFS_LinkDriverEx(const Diskio_drvTypeDef *drv, char *path, uint8_t lun)
@@ -71,7 +71,7 @@ uint8_t FATFS_LinkDriverEx(const Diskio_drvTypeDef *drv, char *path, uint8_t lun
   uint8_t ret = 1;
   uint8_t DiskNum = 0;
   
-  if(disk.nbr <= _VOLUMES)
+  if(disk.nbr < _VOLUMES)
   {
     disk.is_initialized[disk.nbr] = 0;
     disk.drv[disk.nbr] = drv;  

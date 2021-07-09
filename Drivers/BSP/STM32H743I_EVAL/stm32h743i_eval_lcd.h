@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_lcd.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file contains the common defines and functions prototypes for
   *          the stm32h743i_eval_lcd.c driver.
   ******************************************************************************
@@ -240,6 +240,8 @@ void     BSP_LCD_FillEllipse(int Xpos, int Ypos, int XRadius, int YRadius);
 
 void     BSP_LCD_DisplayOff(void);
 void     BSP_LCD_DisplayOn(void);
+
+void BSP_LCD_SetBrightness(uint8_t BrightnessValue);
 
 /* These functions can be modified in case the current settings
    need to be changed for specific application needs */

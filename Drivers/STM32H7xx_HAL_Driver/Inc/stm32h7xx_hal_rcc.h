@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_rcc.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   Header file of RCC HAL module.
   ******************************************************************************
   * @attention
@@ -703,15 +703,8 @@ typedef struct
                                         tmpreg = READ_BIT(RCC->AHB3ENR, RCC_AHB3ENR_JPGDECEN);\
                                         UNUSED(tmpreg); \
                                        } while(0)
-
-#define __HAL_RCC_FLASH_CLK_ENABLE()   do { \
-                                        __IO uint32_t tmpreg; \
-                                        SET_BIT(RCC->AHB3ENR, RCC_AHB3ENR_FLASHEN);\
-                                        /* Delay after an RCC peripheral clock enabling */ \
-                                        tmpreg = READ_BIT(RCC->AHB3ENR, RCC_AHB3ENR_FLASHEN);\
-                                        UNUSED(tmpreg); \
-                                       } while(0)
-
+																			
+																			 
 #define __HAL_RCC_FMC_CLK_ENABLE()   do { \
                                         __IO uint32_t tmpreg; \
                                         SET_BIT(RCC->AHB3ENR, RCC_AHB3ENR_FMCEN);\
@@ -740,7 +733,6 @@ typedef struct
 #define __HAL_RCC_MDMA_CLK_DISABLE()            (RCC->AHB3ENR &= ~ (RCC_AHB3ENR_MDMAEN))
 #define __HAL_RCC_DMA2D_CLK_DISABLE()           (RCC->AHB3ENR &= ~ (RCC_AHB3ENR_DMA2DEN))
 #define __HAL_RCC_JPGDECEN_CLK_DISABLE()        (RCC->AHB3ENR &= ~ (RCC_AHB3ENR_JPGDECEN))
-#define __HAL_RCC_FLASH_CLK_DISABLE()           (RCC->AHB3ENR &= ~ (RCC_AHB3ENR_FLASHEN))
 #define __HAL_RCC_FMC_CLK_DISABLE()             (RCC->AHB3ENR &= ~ (RCC_AHB3ENR_FMCEN))
 #define __HAL_RCC_QSPI_CLK_DISABLE()            (RCC->AHB3ENR &= ~ (RCC_AHB3ENR_QSPIEN))
 #define __HAL_RCC_SDMMC1_CLK_DISABLE()          (RCC->AHB3ENR &= ~ (RCC_AHB3ENR_SDMMC1EN))
@@ -775,6 +767,7 @@ typedef struct
                                         tmpreg = READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_ADC12EN);\
                                         UNUSED(tmpreg); \
                                        } while(0)
+
 
 #define __HAL_RCC_ETH1MAC_CLK_ENABLE()   do { \
                                         __IO uint32_t tmpreg; \
@@ -1709,7 +1702,6 @@ typedef struct
 #define __HAL_RCC_GPIOI_FORCE_RESET()           (RCC->AHB4RSTR) |= (RCC_AHB4RSTR_GPIOIRST)
 #define __HAL_RCC_GPIOJ_FORCE_RESET()           (RCC->AHB4RSTR) |= (RCC_AHB4RSTR_GPIOJRST)
 #define __HAL_RCC_GPIOK_FORCE_RESET()           (RCC->AHB4RSTR) |= (RCC_AHB4RSTR_GPIOKRST)
-#define __HAL_RCC_PWR_FORCE_RESET()             (RCC->AHB4RSTR) |= (RCC_AHB4RSTR_PWRRST)
 #define __HAL_RCC_CRC_FORCE_RESET()             (RCC->AHB4RSTR) |= (RCC_AHB4RSTR_CRCRST)
 #define __HAL_RCC_BDMA_FORCE_RESET()            (RCC->AHB4RSTR) |= (RCC_AHB4RSTR_BDMARST)
 #define __HAL_RCC_ADC3_FORCE_RESET()            (RCC->AHB4RSTR) |= (RCC_AHB4RSTR_ADC3RST)
@@ -1727,7 +1719,6 @@ typedef struct
 #define __HAL_RCC_GPIOI_RELEASE_RESET()           (RCC->AHB4RSTR) &= ~ (RCC_AHB4RSTR_GPIOIRST)
 #define __HAL_RCC_GPIOJ_RELEASE_RESET()           (RCC->AHB4RSTR) &= ~ (RCC_AHB4RSTR_GPIOJRST)
 #define __HAL_RCC_GPIOK_RELEASE_RESET()           (RCC->AHB4RSTR) &= ~ (RCC_AHB4RSTR_GPIOKRST)
-#define __HAL_RCC_PWR_RELEASE_RESET()             (RCC->AHB4RSTR) &= ~ (RCC_AHB4RSTR_PWRRST)
 #define __HAL_RCC_CRC_RELEASE_RESET()             (RCC->AHB4RSTR) &= ~ (RCC_AHB4RSTR_CRCRST)
 #define __HAL_RCC_BDMA_RELEASE_RESET()            (RCC->AHB4RSTR) &= ~ (RCC_AHB4RSTR_BDMARST)
 #define __HAL_RCC_ADC3_RELEASE_RESET()            (RCC->AHB4RSTR) &= ~ (RCC_AHB4RSTR_ADC3RST)
@@ -1985,7 +1976,6 @@ typedef struct
 #define __HAL_RCC_GPIOI_CLK_SLEEP_ENABLE()           (RCC->AHB4LPENR) |= (RCC_AHB4LPENR_GPIOILPEN)
 #define __HAL_RCC_GPIOJ_CLK_SLEEP_ENABLE()           (RCC->AHB4LPENR) |= (RCC_AHB4LPENR_GPIOJLPEN)
 #define __HAL_RCC_GPIOK_CLK_SLEEP_ENABLE()           (RCC->AHB4LPENR) |= (RCC_AHB4LPENR_GPIOKLPEN)
-#define __HAL_RCC_PWR_CLK_SLEEP_ENABLE()             (RCC->AHB4LPENR) |= (RCC_AHB4LPENR_PWRLPEN)
 #define __HAL_RCC_CRC_CLK_SLEEP_ENABLE()             (RCC->AHB4LPENR) |= (RCC_AHB4LPENR_CRCLPEN)
 #define __HAL_RCC_BDMA_CLK_SLEEP_ENABLE()            (RCC->AHB4LPENR) |= (RCC_AHB4LPENR_BDMALPEN)
 #define __HAL_RCC_ADC3_CLK_SLEEP_ENABLE()            (RCC->AHB4LPENR) |= (RCC_AHB4LPENR_ADC3LPEN)
@@ -2003,7 +1993,6 @@ typedef struct
 #define __HAL_RCC_GPIOI_CLK_SLEEP_DISABLE()           (RCC->AHB4LPENR) &= ~ (RCC_AHB4LPENR_GPIOILPEN)
 #define __HAL_RCC_GPIOJ_CLK_SLEEP_DISABLE()           (RCC->AHB4LPENR) &= ~ (RCC_AHB4LPENR_GPIOJLPEN)
 #define __HAL_RCC_GPIOK_CLK_SLEEP_DISABLE()           (RCC->AHB4LPENR) &= ~ (RCC_AHB4LPENR_GPIOKLPEN)
-#define __HAL_RCC_PWR_CLK_SLEEP_DISABLE()             (RCC->AHB4LPENR) &= ~ (RCC_AHB4LPENR_PWRLPEN)
 #define __HAL_RCC_CRC_CLK_SLEEP_DISABLE()             (RCC->AHB4LPENR) &= ~ (RCC_AHB4LPENR_CRCLPEN)
 #define __HAL_RCC_BDMA_CLK_SLEEP_DISABLE()            (RCC->AHB4LPENR) &= ~ (RCC_AHB4LPENR_BDMALPEN)
 #define __HAL_RCC_ADC3_CLK_SLEEP_DISABLE()            (RCC->AHB4LPENR) &= ~ (RCC_AHB4LPENR_ADC3LPEN)
@@ -2172,7 +2161,7 @@ typedef struct
 
 
 /** @brief  Enable or disable peripheral bus clock  when D3 domain is in DRUN
-  * @note   After reset, peripheral  clock is disabled when CPU is in CSTOP
+  * @note   After reset (default config), peripheral clock is disabled when CPU is in CSTOP
   */
 
 #define __HAL_RCC_BDMA_CLKAM_ENABLE()             (RCC->D3AMR) |= (RCC_D3AMR_BDMAAMEN)

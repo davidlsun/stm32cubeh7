@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file provides a set of firmware functions to manage LEDs,
   *          push-buttons and COM ports available on STM32H743I-EVAL
   *          evaluation board(MB1219) from STMicroelectronics.
@@ -12,7 +12,7 @@
             This driver requires the stm32h743i_eval_io.c/.h files to manage the
             IO module resources mapped on the MFX IO expander.
             These resources are mainly LEDs, Joystick push buttons, SD detect pin,
-            USB OTG power switch/over current drive pins, Camera plug pin, Audio
+            USB OTG power switch/over current drive pins, Audio
             INT pin
   @endverbatim
   ******************************************************************************
@@ -184,12 +184,6 @@ void            AUDIO_IO_DeInit(void);
 void            AUDIO_IO_Write(uint8_t Addr, uint16_t Reg, uint16_t Value);
 uint16_t        AUDIO_IO_Read(uint8_t Addr, uint16_t Reg);
 void            AUDIO_IO_Delay(uint32_t Delay);
-
-/* CAMERA IO functions */
-void            CAMERA_IO_Init(void);
-void            CAMERA_Delay(uint32_t Delay);
-void            CAMERA_IO_Write(uint8_t Addr, uint16_t Reg, uint16_t Value);
-uint16_t        CAMERA_IO_Read(uint8_t Addr, uint16_t Reg);
 
 /* I2C EEPROM IO function */
 void                EEPROM_IO_Init(void);
@@ -784,8 +778,8 @@ static void I2Cx_MspInit(void)
   RCC_PeriphCLKInitTypeDef  RCC_PeriphClkInit;
 
   /* Configure the I2C clock source */
-  RCC_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1;
-  RCC_PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_D2PCLK1;
+  RCC_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C123;
+  RCC_PeriphClkInit.I2c123ClockSelection = RCC_I2C123CLKSOURCE_D2PCLK1;
   HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphClkInit);
 
   /* set STOPWUCK in RCC_CFGR */
@@ -1233,60 +1227,6 @@ uint16_t AUDIO_IO_Read(uint8_t Addr, uint16_t Reg)
   * @retval None
   */
 void AUDIO_IO_Delay(uint32_t Delay)
-{
-  HAL_Delay(Delay);
-}
-
-/********************************* LINK CAMERA ********************************/
-
-/**
-  * @brief  Initializes Camera low level.
-  * @retval None
-  */
-void CAMERA_IO_Init(void)
-{
-  I2Cx_Init();
-}
-
-/**
-  * @brief  Camera writes single data.
-  * @param  Addr: I2C address
-  * @param  Reg: Register address
-  * @param  Value: Data to be written
-  * @retval None
-  */
-void CAMERA_IO_Write(uint8_t Addr, uint16_t Reg, uint16_t Value)
-{
-  uint16_t tmp = Value;
-  /* For S5K5CAG sensor, 16 bits accesses are used */
-  Value = ((uint16_t)(tmp >> 8) & 0x00FF);
-  Value |= ((uint16_t)(tmp << 8)& 0xFF00);
-  I2Cx_WriteMultiple(Addr, Reg, I2C_MEMADD_SIZE_16BIT,(uint8_t*)&Value, 2);
-}
-
-/**
-  * @brief  Camera reads single data.
-  * @param  Addr: I2C address
-  * @param  Reg: Register address
-  * @retval Read data
-  */
-uint16_t CAMERA_IO_Read(uint8_t Addr, uint16_t Reg)
-{
-  uint16_t read_value = 0, tmp = 0;
-  /* For S5K5CAG sensor, 16 bits accesses are used */
-  I2Cx_ReadMultiple(Addr, Reg, I2C_MEMADD_SIZE_16BIT, (uint8_t*)&read_value, 2);
-  tmp = ((uint16_t)(read_value >> 8) & 0x00FF);
-  tmp |= ((uint16_t)(read_value << 8)& 0xFF00);
-  read_value = tmp;
-  return read_value;
-}
-
-/**
-  * @brief  Camera delay
-  * @param  Delay: Delay in ms
-  * @retval None
-  */
-void CAMERA_Delay(uint32_t Delay)
 {
   HAL_Delay(Delay);
 }

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_gpio.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   GPIO HAL module driver.
   *          This file provides firmware functions to manage the following 
   *          functionalities of the General Purpose Input/Output (GPIO) peripheral:
@@ -191,6 +191,8 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
   uint32_t ioposition = 0x00;
   uint32_t iocurrent = 0x00;
   uint32_t temp = 0x00;
+  EXTI_Core_TypeDef * EXTI_Ptr = EXTI_D1; 
+
 
   /* Check the parameters */
   assert_param(IS_GPIO_ALL_INSTANCE(GPIOx));
@@ -267,22 +269,22 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
         SYSCFG->EXTICR[position >> 2] = temp;
 
         /* Clear EXTI line configuration */
-        temp = EXTI_D1->IMR1;
+        temp = EXTI_Ptr->IMR1;
         temp &= ~((uint32_t)iocurrent);
         if((GPIO_Init->Mode & GPIO_MODE_IT) == GPIO_MODE_IT)
         {
           temp |= iocurrent;
         }
-        EXTI_D1->IMR1 = temp;
+        EXTI_Ptr->IMR1 = temp;
 
-        temp = EXTI_D1->EMR1;
+        temp = EXTI_Ptr->EMR1;
         temp &= ~((uint32_t)iocurrent);
         if((GPIO_Init->Mode & GPIO_MODE_EVT) == GPIO_MODE_EVT)
         {
           temp |= iocurrent;
         }
-        EXTI_D1->EMR1 = temp;
-
+        EXTI_Ptr->EMR1 = temp;
+             
         /* Clear Rising Falling edge configuration */
         temp = EXTI->RTSR1;
         temp &= ~((uint32_t)iocurrent);
@@ -299,9 +301,7 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
           temp |= iocurrent;
         }
         EXTI->FTSR1 = temp;
-      }
-      
-      
+      }      
     }
   }
 }
@@ -354,18 +354,19 @@ void HAL_GPIO_DeInit(GPIO_TypeDef  *GPIOx, uint32_t GPIO_Pin)
       tmp &= (((uint32_t)0x0F) << (4 * (position & 0x03)));
       if(tmp == ((uint32_t)(GPIO_GET_INDEX(GPIOx)) << (4 * (position & 0x03))))
       {
-      /* Configure the External Interrupt or event for the current IO */
-      tmp = ((uint32_t)0x0F) << (4 * (position & 0x03));
-      SYSCFG->EXTICR[position >> 2] &= ~tmp;
-
-      /* Clear EXTI line configuration */
-      EXTI_D1->IMR1 &= ~((uint32_t)iocurrent);
-      EXTI_D1->EMR1 &= ~((uint32_t)iocurrent);
-      
-      /* Clear Rising Falling edge configuration */
-      EXTI->RTSR1 &= ~((uint32_t)iocurrent);
-      EXTI->FTSR1 &= ~((uint32_t)iocurrent);
-           }
+        /* Configure the External Interrupt or event for the current IO */
+        tmp = ((uint32_t)0x0F) << (4 * (position & 0x03));
+        SYSCFG->EXTICR[position >> 2] &= ~tmp;
+        
+        /* Clear EXTI line configuration */
+        EXTI_D1->IMR1 &= ~((uint32_t)iocurrent);
+        EXTI_D1->EMR1 &= ~((uint32_t)iocurrent);
+        
+        
+        /* Clear Rising Falling edge configuration */
+        EXTI->RTSR1 &= ~((uint32_t)iocurrent);
+        EXTI->FTSR1 &= ~((uint32_t)iocurrent);
+      }
     }
   }
 }

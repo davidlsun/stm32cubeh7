@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_sd.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file includes the uSD card driver mounted on STM32H743I-EVAL
   *          evaluation boards.
   @verbatim

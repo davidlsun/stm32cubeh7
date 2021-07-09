@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file contains definitions for STM32H743I_EVAL LEDs,
   *          push-buttons and COM ports hardware resources.
   ******************************************************************************
@@ -310,7 +310,6 @@ typedef enum
 #define TS_I2C_ADDRESS                   ((uint16_t)0x82)  /*stmpe811 used on MB1046 board */
 #define TS3510_I2C_ADDRESS               ((uint16_t)0x80)
 #define EXC7200_I2C_ADDRESS              ((uint16_t)0x08)
-#define CAMERA_I2C_ADDRESS               ((uint16_t)0x5A)
 #define AUDIO_I2C_ADDRESS                ((uint16_t)0x34)
 #define EEPROM_I2C_ADDRESS_A01           ((uint16_t)0xA0)
 #define EEPROM_I2C_ADDRESS_A02           ((uint16_t)0xA6)
@@ -345,12 +344,32 @@ typedef enum
 
 /* I2C TIMING Register define when I2C clock source is SYSCLK */
 /* I2C TIMING is calculated from APB1 source clock = 50 MHz */
-/* Due to the big MOFSET capacity for adapting the camera level the rising time is very large (>1us) */
 /* 0x40912732 takes in account the big rising and aims a clock of 100khz */
 /* this value might be adapted when next Rev Birdie board is available */
 #ifndef EVAL_I2Cx_TIMING
 #define EVAL_I2Cx_TIMING                      ((uint32_t)0x40912732)
 #endif /* EVAL_I2Cx_TIMING */
+
+
+
+/**
+  * @}
+  */
+
+
+/** @addtogroup STM32H743I_EVAL_LCD_TIM
+  * @{
+  */
+/**
+ * @brief Definition for LCD Timer used to control the Brightnes
+ */
+#define LCD_TIMx                           TIM3
+#define LCD_TIMx_CLK_ENABLE()              __HAL_RCC_TIM3_CLK_ENABLE()
+#define LCD_TIMx_CLK_DISABLE()             __HAL_RCC_TIM3_CLK_DISABLE()
+#define LCD_TIMx_CHANNEL                   TIM_CHANNEL_1
+#define LCD_TIMx_CHANNEL_AF                GPIO_AF2_TIM3
+#define LCD_TIMX_PERIOD_VALUE              ((uint32_t)50000) /* Period Value    */
+#define LCD_TIMX_PRESCALER_VALUE           ((uint32_t)4)     /* Prescaler Value */
 
 /**
   * @}

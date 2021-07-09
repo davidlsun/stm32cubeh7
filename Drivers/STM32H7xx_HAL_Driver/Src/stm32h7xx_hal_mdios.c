@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_mdios.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   MDIOS HAL module driver.
   *          This file provides firmware functions to manage the following 
   *          functionalities of the MDIOS Peripheral.
@@ -614,12 +614,12 @@ HAL_MDIOS_StateTypeDef HAL_MDIOS_GetState(MDIOS_HandleTypeDef *hmdios)
 /**
   * @}
   */
-#endif /* MDIOS */ 
+#endif /* HAL_MDIOS_MODULE_ENABLED */
 /**
   * @}
   */
- 
 /**
   * @}
   */
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

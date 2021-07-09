@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_nucleo_144.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file provides set of firmware functions to manage:
   *          - LEDs and push-button available on STM32H7XX-Nucleo-144 Kit
   *            from STMicroelectronics
@@ -64,10 +64,10 @@
   */
 
 /**
-  * @brief STM32H7xx NUCLEO BSP Driver version number V1.0.0
+  * @brief STM32H7xx NUCLEO BSP Driver version number V1.1.0
   */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_MAIN   (0x01) /*!< [31:24] main version */
-#define __STM32H7xx_NUCLEO_BSP_VERSION_SUB1   (0x00) /*!< [23:16] sub1 version */
+#define __STM32H7xx_NUCLEO_BSP_VERSION_SUB1   (0x01) /*!< [23:16] sub1 version */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
 #define __STM32H7xx_NUCLEO_BSP_VERSION        ((__STM32H7xx_NUCLEO_BSP_VERSION_MAIN << 24)\
@@ -380,8 +380,8 @@ static void SPIx_MspInit(SPI_HandleTypeDef *hspi)
   GPIO_InitStruct.Pull  = GPIO_NOPULL;
   HAL_GPIO_Init(NUCLEO_SPIx_MISO_MOSI_GPIO_PORT, &GPIO_InitStruct);
 
-  SPI_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_SPI1;
-  SPI_PeriphClkInit.Spi1ClockSelection = RCC_SPI2CLKSOURCE_PLL;
+  SPI_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_SPI123;
+  SPI_PeriphClkInit.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
   HAL_RCCEx_PeriphCLKConfig(&SPI_PeriphClkInit);
 
   /*** Configure the SPI peripheral ***/

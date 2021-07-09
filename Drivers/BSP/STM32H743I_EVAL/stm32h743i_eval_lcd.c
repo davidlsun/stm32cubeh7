@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_lcd.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file includes the driver for Liquid Crystal Display (LCD) module
   *          mounted on STM32H743I-EVAL evaluation board.
   @verbatim
@@ -122,6 +122,10 @@
 DMA2D_HandleTypeDef hdma2d_eval;
 LTDC_HandleTypeDef  hltdc_eval;
 static uint32_t            PCLK_profile = LCD_MAX_PCLK;
+
+/* Timer handler declaration */
+static TIM_HandleTypeDef LCD_TimHandle;
+
 /* Default LCD configuration with LCD Layer 1 */
 static uint32_t            ActiveLayer = 0;
 static LCD_DrawPropTypeDef DrawProp[MAX_LAYER_NUMBER];
@@ -136,6 +140,11 @@ static void DrawChar(uint16_t Xpos, uint16_t Ypos, const uint8_t *c);
 static void FillTriangle(uint16_t x1, uint16_t x2, uint16_t x3, uint16_t y1, uint16_t y2, uint16_t y3);
 static void LL_FillBuffer(uint32_t LayerIndex, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t OffLine, uint32_t ColorIndex);
 static void LL_ConvertLineToARGB8888(void * pSrc, void *pDst, uint32_t xSize, uint32_t ColorMode);
+static void TIMx_PWM_MspInit(TIM_HandleTypeDef *htim);
+static void TIMx_PWM_MspDeInit(TIM_HandleTypeDef *htim);
+static void TIMx_PWM_DeInit(TIM_HandleTypeDef *htim);
+static void TIMx_PWM_Init(TIM_HandleTypeDef *htim);
+
 /**
   * @}
   */
@@ -232,6 +241,9 @@ uint8_t BSP_LCD_InitEx(uint32_t PclkConfig)
   /* Initialize the font */
   BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
 
+  /* Initialize TIM in PWM mode to control brightness */
+  TIMx_PWM_Init(&LCD_TimHandle);
+
   return LCD_OK;
 }
 
@@ -252,6 +264,9 @@ uint8_t BSP_LCD_DeInit(void)
 
   /* DeInit the LTDC MSP : this __weak function can be rewritten by the application */
   BSP_LCD_MspDeInit(&hltdc_eval, NULL);
+
+  /* DeInit TIM PWM */
+  TIMx_PWM_DeInit(&LCD_TimHandle);
 
   return LCD_OK;
 }
@@ -1239,7 +1254,7 @@ void BSP_LCD_DisplayOff(void)
 /**
   * @brief  Initializes the LTDC MSP.
   * @param  hltdc: LTDC handle
-  * @param  Params: Pointer to void   
+  * @param  Params: Pointer to void
   * @retval None
   */
 __weak void BSP_LCD_MspInit(LTDC_HandleTypeDef *hltdc, void *Params)
@@ -1288,7 +1303,7 @@ __weak void BSP_LCD_MspInit(LTDC_HandleTypeDef *hltdc, void *Params)
 /**
   * @brief  DeInitializes BSP_LCD MSP.
   * @param  hltdc: LTDC handle
-  * @param  Params: Pointer to void   
+  * @param  Params: Pointer to void
   * @retval None
   */
 __weak void BSP_LCD_MspDeInit(LTDC_HandleTypeDef *hltdc, void *Params)
@@ -1323,7 +1338,7 @@ __weak void BSP_LCD_MspDeInit(LTDC_HandleTypeDef *hltdc, void *Params)
 /**
   * @brief  Clock Config.
   * @param  hltdc: LTDC handle
-  * @param  Params: Pointer to void     
+  * @param  Params: Pointer to void
   * @note   This API is called by BSP_LCD_Init()
   *         Being __weak it can be overwritten by the application
   * @retval None
@@ -1382,6 +1397,35 @@ __weak void BSP_LCD_ClockConfig(LTDC_HandleTypeDef *hltdc, void *Params)
     periph_clk_init_struct.PLL3.PLL3Q = 2;
     HAL_RCCEx_PeriphCLKConfig(&periph_clk_init_struct);
   }
+}
+
+/**
+  * @brief  Set the brightness value
+  * @param  BrightnessValue: [00: Min (black), 100 Max]
+  */
+void BSP_LCD_SetBrightness(uint8_t BrightnessValue)
+{
+  /* Timer Configuration */
+  TIM_OC_InitTypeDef LCD_TIM_Config;
+
+  /* Stop PWM Timer channel */
+  HAL_TIM_PWM_Stop(&LCD_TimHandle, LCD_TIMx_CHANNEL);
+
+  /* Common configuration for all channels */
+  LCD_TIM_Config.OCMode       = TIM_OCMODE_PWM1;
+  LCD_TIM_Config.OCPolarity   = TIM_OCPOLARITY_HIGH;
+  LCD_TIM_Config.OCFastMode   = TIM_OCFAST_DISABLE;
+  LCD_TIM_Config.OCNPolarity  = TIM_OCNPOLARITY_HIGH;
+  LCD_TIM_Config.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  LCD_TIM_Config.OCIdleState  = TIM_OCIDLESTATE_RESET;
+
+  /* Set the pulse value for channel */
+  LCD_TIM_Config.Pulse =  (uint32_t)((LCD_TIMX_PERIOD_VALUE * BrightnessValue) / 100);
+
+  HAL_TIM_PWM_ConfigChannel(&LCD_TimHandle, &LCD_TIM_Config, LCD_TIMx_CHANNEL);
+
+  /* Start PWM Timer channel */
+  HAL_TIM_PWM_Start(&LCD_TimHandle, LCD_TIMx_CHANNEL);
 }
 
 /**
@@ -1601,6 +1645,88 @@ static void LL_ConvertLineToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uin
 }
 
 /**
+  * @brief  Initializes TIM MSP.
+  * @param  htim: TIM handle
+  * @retval None
+  */
+static void TIMx_PWM_MspInit(TIM_HandleTypeDef *htim)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /* TIMx Peripheral clock enable */
+  LCD_TIMx_CLK_ENABLE();
+
+  /* Timer channel configuration */
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = LCD_TIMx_CHANNEL_AF;
+  GPIO_InitStruct.Pin = GPIO_PIN_6; /* BL_CTRL */
+
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}
+
+/**
+  * @brief  De-Initializes TIM MSP.
+  * @param  htim: TIM handle
+  * @retval None
+  */
+static void TIMx_PWM_MspDeInit(TIM_HandleTypeDef *htim)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  /* TIMx Peripheral clock enable */
+  LCD_TIMx_CLK_DISABLE();
+
+  /* Timer channel configuration */
+  GPIO_InitStruct.Pin = GPIO_PIN_6; /* BL_CTRL */
+  HAL_GPIO_DeInit(GPIOA, GPIO_InitStruct.Pin);
+}
+
+/**
+  * @brief  Initializes TIM in PWM mode
+  * @param  htim: TIM handle
+  * @retval None
+  */
+static void TIMx_PWM_Init(TIM_HandleTypeDef *htim)
+{
+  /* Timer_Clock = 2 x  APB2_clock = 200 MHz */
+  /* PWM_freq = Timer_Clock /(Period x (Prescaler + 1))*/
+  /* PWM_freq = 200 MHz /(50000 x 5) = 800 Hz*/
+
+  htim->Instance = LCD_TIMx;
+  HAL_TIM_PWM_DeInit(htim);
+
+  TIMx_PWM_MspInit(htim);
+
+  htim->Init.Prescaler         = LCD_TIMX_PRESCALER_VALUE;
+  htim->Init.Period            = LCD_TIMX_PERIOD_VALUE;
+  htim->Init.ClockDivision     = 0;
+  htim->Init.CounterMode       = TIM_COUNTERMODE_UP;
+  htim->Init.RepetitionCounter = 0;
+
+  HAL_TIM_PWM_Init(htim);
+}
+
+/**
+  * @brief  De-Initializes TIM in PWM mode
+  * @param  htim: TIM handle
+  * @retval None
+  */
+static void TIMx_PWM_DeInit(TIM_HandleTypeDef *htim)
+{
+  htim->Instance = LCD_TIMx;
+  /* Timer de-intialization */
+  HAL_TIM_PWM_DeInit(htim);
+
+  /* Timer Msp de-intialization */
+  TIMx_PWM_MspDeInit(htim);
+}
+
+
+/**
   * @}
   */
 
@@ -1617,3 +1743,4 @@ static void LL_ConvertLineToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uin
   */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

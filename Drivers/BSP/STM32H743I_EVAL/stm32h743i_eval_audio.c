@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_audio.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file provides the Audio driver for the STM32H743I-EVAL
   *          board.
   @verbatim
@@ -144,7 +144,7 @@
   * @{
   */
 
-/** @defgroup STM32H743I_EVAL_AUDIO AUDIO
+/** @addtogroup STM32H743I_EVAL_AUDIO STM32H743I EVAL board BSP AUDIO
   * @brief    This file includes the low layer driver for wm8994 Audio Codec
   *           available on STM32H743I-EVAL board (MB1246).
   * @{
@@ -330,6 +330,14 @@ uint8_t BSP_AUDIO_OUT_Init(uint16_t OutputDevice, uint8_t Volume, uint32_t Audio
     ret = AUDIO_ERROR;
   }
 
+#if defined ( __CC_ARM )  /* !< ARM Compiler */  
+  /* Workaround to fix */
+  if(hAudioIn.Interface == AUDIO_IN_INTERFACE_PDM)
+  {
+    Volume = Volume / 2;
+  }
+#endif
+  
   if(ret == AUDIO_OK)
   {
     /* Initialize the codec internal registers */
@@ -1517,7 +1525,7 @@ uint8_t BSP_AUDIO_IN_PDMToPCM_Init(uint32_t AudioFreq, uint32_t ChnlNbrIn, uint3
 
     /* PDM lib config phase */
     PDM_FilterConfig[index].output_samples_number = AudioFreq/1000;
-    PDM_FilterConfig[index].mic_gain = 0;
+    PDM_FilterConfig[index].mic_gain = 24;
     PDM_FilterConfig[index].decimation_factor = PDM_FILTER_DEC_FACTOR_64;
     PDM_Filter_setConfig((PDM_Filter_Handler_t *)&PDM_FilterHandler[index], &PDM_FilterConfig[index]);
   }

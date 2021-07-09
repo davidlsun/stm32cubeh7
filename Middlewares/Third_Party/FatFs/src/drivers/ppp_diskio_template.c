@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    ppp_diskio.c
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    21-April-2017
+  * @version V2.0.1
+  * @date    10-July-2017
   * @brief   PPP Disk I/O driver generic driver template
              this driver is not functional and is intended to show
 	     how to implement a FatFs diskio driver.

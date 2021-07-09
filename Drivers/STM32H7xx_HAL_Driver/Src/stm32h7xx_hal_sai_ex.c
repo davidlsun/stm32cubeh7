@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_sai_ex.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   SAI Extended HAL module driver.
   *          This file provides firmware functions to manage the following
   *          functionality of the SAI Peripheral Controller:

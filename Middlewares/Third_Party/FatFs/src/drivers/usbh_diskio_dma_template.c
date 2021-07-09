@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    usbh_diskio_dma_template.c 
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    21-April-2017
+  * @version V2.0.1
+  * @date    10-July-2017
   * @brief   USB Host Disk I/O template driver (with internal DMA).
              This file needs to be copied under the application project
 	     alongside the respective header file

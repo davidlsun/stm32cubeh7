@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_conf_template.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   HAL configuration template file. 
   *          This file should be copied to the application folder and renamed
   *          to stm32h7xx_hal_conf.h.

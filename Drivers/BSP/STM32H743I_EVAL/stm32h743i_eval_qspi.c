@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_qspi.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file includes a standard driver for the MT25TL01G QSPI
   *          memory mounted on STM32H743I-EVAL board.
   @verbatim
@@ -130,10 +130,10 @@ uint8_t BSP_QSPI_Init(void)
   BSP_QSPI_MspInit(&QSPIHandle, NULL);
 
   /* QSPI initialization */
-  /* ClockPrescaler set to 4, so QSPI clock = 400MHz / (4+1) = 80MHz */
-  QSPIHandle.Init.ClockPrescaler     = 4;
+  /* ClockPrescaler set to 1, so QSPI clock = 200MHz / (1+1) = 100MHz */
+  QSPIHandle.Init.ClockPrescaler     = 1;
   QSPIHandle.Init.FifoThreshold      = 1;
-  QSPIHandle.Init.SampleShifting     = QSPI_SAMPLE_SHIFTING_NONE;
+  QSPIHandle.Init.SampleShifting     = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
   QSPIHandle.Init.FlashSize          = POSITION_VAL(MT25TL01G_FLASH_SIZE) - 1;
   QSPIHandle.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_3_CYCLE;
   QSPIHandle.Init.ClockMode          = QSPI_CLOCK_MODE_0;

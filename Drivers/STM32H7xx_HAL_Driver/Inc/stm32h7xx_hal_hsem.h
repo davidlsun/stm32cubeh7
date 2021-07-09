@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_hsem.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   Header file of HSEM HAL module.
   ******************************************************************************
   * @attention
@@ -94,34 +94,34 @@
   * @param  __SEM_MASK__: semaphores Mask
   * @retval None.
   */
-#define __HAL_HSEM_ENABLE_IT(__SEM_MASK__) (HSEM->IER0 |= (__SEM_MASK__))
+#define __HAL_HSEM_ENABLE_IT(__SEM_MASK__) (HSEM->IER |= (__SEM_MASK__))
 /**
   * @brief  Disables the specified HSEM interrupts.
   * @param  __SEM_MASK__: semaphores Mask
   * @retval None.
   */
-#define __HAL_HSEM_DISABLE_IT(__SEM_MASK__) (HSEM->IER0 &= ~(__SEM_MASK__))
+#define __HAL_HSEM_DISABLE_IT(__SEM_MASK__) (HSEM->IER &= ~(__SEM_MASK__))
 
 /**
   * @brief  Checks whether interrupt has occurred or not for semaphores specified by a mask.
   * @param  __SEM_MASK__: semaphores Mask
 * @retval semaphores Mask : Semaphores where an interrupt occurred.
   */
-#define __HAL_HSEM_GET_IT(__SEM_MASK__) ((__SEM_MASK__) & HSEM->MISR0)
+#define __HAL_HSEM_GET_IT(__SEM_MASK__) ((__SEM_MASK__) & HSEM->MISR)
 
 /**
   * @brief  Get the semaphores release status flags.
   * @param  __SEM_MASK__: semaphores Mask 
   * @retval semaphores Mask : Semaphores where Release flags rise.
   */
-#define __HAL_HSEM_GET_FLAG(__SEM_MASK__) ((__SEM_MASK__) & HSEM->ISR0)
+#define __HAL_HSEM_GET_FLAG(__SEM_MASK__) ((__SEM_MASK__) & HSEM->ISR)
 
 /**
   * @brief  Clears the HSEM Interrupt flags.
   * @param  __SEM_MASK__: semaphores Mask  
   * @retval None.
   */
-#define __HAL_HSEM_CLEAR_FLAG(__SEM_MASK__) (HSEM->ICR0 |= (__SEM_MASK__))
+#define __HAL_HSEM_CLEAR_FLAG(__SEM_MASK__) (HSEM->ICR |= (__SEM_MASK__))
 
 /**
   * @}
@@ -227,7 +227,7 @@ void HAL_HSEM_IRQHandler(void);
 
 #define IS_HSEM_KEY(__KEY__) ((__KEY__) <= HSEM_CLEAR_KEY_MAX )
 
-#define IS_HSEM_MASTERID(__MASTERID__) (((__MASTERID__) == HSEM_CM7_MASTERID))                                     
+#define IS_HSEM_MASTERID(__MASTERID__) (((__MASTERID__) == HSEM_CM7_MASTERID))
 /**
   * @}
   */

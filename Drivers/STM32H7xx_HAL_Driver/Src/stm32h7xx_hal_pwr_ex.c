@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_pwr_ex.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   Extended PWR HAL module driver.
   *          This file provides firmware functions to manage the following
   *          functionalities of PWR extension peripheral:
@@ -139,11 +139,12 @@
 
 /**
   * @brief  Configure the system Power Supply.
-  * @param  SupplySource: Specifies the Power Supply source.
-  *          This parameter can be one of the following values:
-  *            @arg PWR_LDO_SUPPLY: The LDO supplies the Vcore Power Domains.
-  *            @arg PWR_EXTERNAL_SOURCE_SUPPLY: The Vcore Power Domains are supplied from external power source.
-  *                                               The LDO is Bypassed.
+  * @param  SupplySource: Specifies the Power Supply source to set after a system startup.
+  *         This parameter can be one of the following values:
+  *            @arg PWR_LDO_SUPPLY                      The LDO regulator supplies the Vcore Power Domains.
+  *
+  *            @arg PWR_EXTERNAL_SOURCE_SUPPLY          The LDO regulator is Bypassed.
+  *                                                     The Vcore Power Domains are supplied from external source.                                        
   * @retval HAL status.
   */
 HAL_StatusTypeDef HAL_PWREx_ConfigSupply(uint32_t SupplySource)
@@ -390,7 +391,8 @@ uint32_t  HAL_PWREx_GetStopModeVoltageRange(void)
         (++) PinPull: Wakeup pin pull (no pull, pull-up or pull-down).
     [..]
       The wakeup pins are internally connected to the EXTI lines [55-60] to generate an interrupt
-      if enabled. The EXTI lines configuration is done in the HAL_PWREx_EnableWakeUpPin() function.
+      if enabled. The EXTI lines configuration is done by the HAL_EXTI_Dx_EventInputConfig() functions
+      defined in the stm32h7xxhal.c file.
     [..]
       When a wakeup pin event is received the HAL_PWREx_WAKEUP_PIN_IRQHandler is called
       and the appropriate flag is set in the PWR_WKUPFR register. Then in the HAL_PWREx_WAKEUP_PIN_IRQHandler
@@ -591,20 +593,24 @@ void HAL_PWREx_DisableFlashPowerDown(void)
 void HAL_PWREx_EnableWakeUpPin(PWREx_WakeupPinTypeDef *sPinParams)
 {
   uint32_t pinConfig;
-
+  uint32_t regMask;
+  
   /* Check the parameters */
   assert_param(IS_PWR_WAKEUP_PIN(sPinParams->WakeUpPin));
   assert_param(IS_PWR_WAKEUP_PIN_POLARITY(sPinParams->PinPolarity));
   assert_param(IS_PWR_WAKEUP_PIN_PULL(sPinParams->PinPull));
 
-  pinConfig = (sPinParams->WakeUpPin | \
+  pinConfig = sPinParams->WakeUpPin | \
               (sPinParams->PinPolarity << (POSITION_VAL(sPinParams->WakeUpPin) + 8)) | \
-              (sPinParams->PinPull << (POSITION_VAL(sPinParams->WakeUpPin) + 16)));
+              (sPinParams->PinPull << ((POSITION_VAL(sPinParams->WakeUpPin) * 2) + 16));
 
+  regMask   = sPinParams->WakeUpPin | \
+              ((1 << POSITION_VAL(sPinParams->WakeUpPin)) + 8) | \
+              (((1 << POSITION_VAL(sPinParams->WakeUpPin))*2) + 16);
+  
   /* Enable and Specify the Wake-Up pin polarity and the pull configuration
      for the event detection (rising or falling edge) */
-  MODIFY_REG(PWR->WKUPEPR, PWR_EWUP_MASK, pinConfig);
-
+  MODIFY_REG(PWR->WKUPEPR, regMask, pinConfig);
   /* Configure the Wakeup Pin EXTI Line */
   MODIFY_REG(EXTI_D1->IMR2, PWR_EXTI_WAKEUP_PINS_MASK, (sPinParams->WakeUpPin << 23));
 }
@@ -1169,7 +1175,7 @@ void HAL_PWREx_ConfigAVD(PWREx_AVDTypeDef *sConfigAVD)
   /* Set the ALS[18:17] bits according to AVDLevel value */
   MODIFY_REG(PWR->CR1, PWR_CR1_ALS, sConfigAVD->AVDLevel);
 
-  /* Clear any previous config. Keep it clear if no event or IT mode is selected */
+  /* Clear any previous config */
   __HAL_PWR_AVD_EXTI_DISABLE_EVENT();
   __HAL_PWR_AVD_EXTI_DISABLE_IT();
   __HAL_PWR_AVD_EXTI_DISABLE_RISING_EDGE();

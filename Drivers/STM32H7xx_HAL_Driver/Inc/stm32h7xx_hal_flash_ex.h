@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32H7xx_hal_flash_ex.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   Header file of FLASH HAL module.
   ******************************************************************************
   * @attention
@@ -188,7 +188,7 @@ typedef struct
 #define OPTIONBYTE_PCROP         ((uint32_t)0x08U)  /*!< PCROP option byte configuration */
 #define OPTIONBYTE_BOR           ((uint32_t)0x10U)  /*!< BOR option byte configuration */
 #define OPTIONBYTE_SECURE_AREA   ((uint32_t)0x20U)  /*!< secure area option byte configuration */
-#define OPTIONBYTE_BOOTADD       ((uint32_t)0x40U)      /*!< BOOT ADD option byte configuration */
+#define OPTIONBYTE_BOOTADD       ((uint32_t)0x40U)  /*!< BOOT ADD option byte configuration */
 /**
   * @}
   */
@@ -352,17 +352,15 @@ typedef struct
 
 /**
   * @}
-  */
-
-/**
-  * @}
   */  
+
+
   
 /** @defgroup FLASHEx_OB_IWDG1_SW  FLASHEx OB IWDG1 SW
   * @{
   */
-#define OB_IWDG1_HW             ((uint32_t)FLASH_OPTSR_IWDG1_SW) /*!< Hardware independent watchdog 1 */
-#define OB_IWDG1_SW             ((uint32_t)0x00000U)             /*!< Software independent watchdog 1 */
+#define OB_IWDG1_SW             ((uint32_t)FLASH_OPTSR_IWDG1_SW) /*!< Hardware independent watchdog 1 */
+#define OB_IWDG1_HW             ((uint32_t)0x00000U)             /*!< Software independent watchdog 1 */
 /**
   * @}
   */

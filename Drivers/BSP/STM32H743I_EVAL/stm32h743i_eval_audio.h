@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_audio.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file contains the common defines and functions prototypes for
   *          the stm32h743i_eval_audio.c driver.
   ******************************************************************************
@@ -56,11 +56,11 @@
   * @{
   */
 
-/** @addtogroup STM32H743I_EVAL
+/** @defgroup STM32H743I_EVAL STM32H743I EVAL board
   * @{
   */
 
-/** @addtogroup STM32H743I_EVAL_AUDIO
+/** @defgroup STM32H743I_EVAL_AUDIO STM32H743I EVAL board BSP AUDIO
   * @{
   */
 
@@ -279,8 +279,6 @@ typedef struct
 #define INPUT_DEVICE_DIGITAL_MIC       ((uint32_t)(INPUT_DEVICE_DIGITAL_MIC1 | INPUT_DEVICE_DIGITAL_MIC2))
 #define DFSDM_MIC_NUMBER               ((uint32_t)2)
 
-#define DFSDM_MIC_NUMBER               ((uint32_t)2)
-
 /* Audio In interface for Digital mic */
 #define AUDIO_IN_INTERFACE_SAI        ((uint16_t)0)
 #define AUDIO_IN_INTERFACE_PDM        ((uint16_t)1)
@@ -345,6 +343,7 @@ uint8_t BSP_AUDIO_IN_InitEx(uint16_t InputDevice, uint32_t AudioFreq, uint32_t B
 uint8_t BSP_AUDIO_IN_ConfigMicDefault(uint32_t InputDevice);
 uint8_t BSP_AUDIO_IN_ConfigDigitalMic(uint32_t InputDevice, void *Params);
 uint8_t BSP_AUDIO_IN_AllocScratch (int32_t *pScratch, uint32_t size);
+uint8_t BSP_AUDIO_IN_GetChannelNumber(void);
 uint8_t BSP_AUDIO_IN_Record(uint16_t *pBuf, uint32_t Size);
 uint8_t BSP_AUDIO_IN_RecordEx(uint32_t *pBuf, uint32_t Size);
 uint8_t BSP_AUDIO_IN_SetFrequency(uint32_t AudioFreq);

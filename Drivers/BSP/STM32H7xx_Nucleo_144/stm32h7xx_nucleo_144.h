@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_nucleo_144.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file contains definitions for:
   *          - LEDs and push-button available on STM32H7xx-Nucleo-144 Kit
   *            from STMicroelectronics

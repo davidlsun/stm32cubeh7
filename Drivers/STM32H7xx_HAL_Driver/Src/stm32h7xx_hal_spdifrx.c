@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_spdifrx.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   This file provides firmware functions to manage the following
   *          functionalities of the SPDIFRX audio interface:
   *           + Initialization and Configuration
@@ -219,6 +219,8 @@ HAL_StatusTypeDef HAL_SPDIFRX_Init(SPDIFRX_HandleTypeDef *hspdif)
   assert_param(IS_CHANNEL_STATUS_MASK(hspdif->Init.ChannelStatusMask));
   assert_param(IS_VALIDITY_MASK(hspdif->Init.ValidityBitMask));
   assert_param(IS_PARITY_ERROR_MASK(hspdif->Init.ParityErrorMask));
+  assert_param(IS_SYMBOL_CLOCK_GEN(hspdif->Init.SymbolClockGen));
+  assert_param(IS_SYMBOL_CLOCK_GEN(hspdif->Init.BackupSymbolClockGen));
 
   if(hspdif->State == HAL_SPDIFRX_STATE_RESET)
   {
@@ -239,7 +241,9 @@ HAL_StatusTypeDef HAL_SPDIFRX_Init(SPDIFRX_HandleTypeDef *hspdif)
 
   tmpreg &= ~((uint16_t) SPDIFRX_CR_RXSTEO  | SPDIFRX_CR_DRFMT  | SPDIFRX_CR_PMSK |
               SPDIFRX_CR_VMSK | SPDIFRX_CR_CUMSK | SPDIFRX_CR_PTMSK  |
-              SPDIFRX_CR_CHSEL | SPDIFRX_CR_NBTR | SPDIFRX_CR_WFA | SPDIFRX_CR_INSEL);
+              SPDIFRX_CR_CHSEL | SPDIFRX_CR_NBTR | SPDIFRX_CR_WFA |
+             SPDIFRX_CR_CKSEN | SPDIFRX_CR_CKSBKPEN |
+              SPDIFRX_CR_INSEL);
 
   /* Sets the new configuration of the SPDIFRX peripheral */
   tmpreg |= ((uint16_t) hspdif->Init.StereoMode |
@@ -251,7 +255,10 @@ HAL_StatusTypeDef HAL_SPDIFRX_Init(SPDIFRX_HandleTypeDef *hspdif)
              hspdif->Init.PreambleTypeMask |
              hspdif->Init.ChannelStatusMask |
              hspdif->Init.ValidityBitMask |
-             hspdif->Init.ParityErrorMask);
+             hspdif->Init.SymbolClockGen |
+             hspdif->Init.BackupSymbolClockGen |
+             hspdif->Init.ParityErrorMask            
+             );
 
   hspdif->Instance->CR = tmpreg;
 

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_flash_ex.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   Extended FLASH HAL module driver.
   *          This file provides firmware functions to manage the following 
   *          functionalities of the FLASH extension peripheral:
@@ -582,24 +582,38 @@ static void FLASH_MassErase(uint32_t VoltageRange, uint32_t Banks)
   assert_param(IS_FLASH_BANK(Banks));
   assert_param(IS_VOLTAGERANGE(VoltageRange));  
   
-  /* proceed to erase all sectors */
-  if((Banks & FLASH_BANK_1) == FLASH_BANK_1)
+  /* Flash Mass Erase */
+  if((Banks & FLASH_BANK_BOTH) == FLASH_BANK_BOTH)
   {
     /* reset Program/erase VoltageRange for Bank1 */
-    FLASH->CR1 &= (~FLASH_CR_PSIZE);
-  
+    FLASH->CR1 &= (~FLASH_CR_PSIZE);    
     /* Bank1 will be erased, and set voltage range*/
     FLASH->CR1 |= FLASH_CR_BER | VoltageRange;
-    FLASH->CR1 |= FLASH_CR_START;
+    
+    FLASH->OPTCR |= FLASH_OPTCR_MER;
+    
   }
-  if((Banks & FLASH_BANK_2) == FLASH_BANK_2)
+  else
   {
-    /* reset Program/erase VoltageRange for Bank2 */
-    FLASH->CR2 &= (~FLASH_CR_PSIZE);
-  
-    /* Bank2 will be erased, and set voltage range*/
-    FLASH->CR2 |= FLASH_CR_BER | VoltageRange;
-    FLASH->CR2 |= FLASH_CR_START;
+    /* Proceed to erase Flash Bank  */
+    if((Banks & FLASH_BANK_1) == FLASH_BANK_1)
+    {
+      /* reset Program/erase VoltageRange for Bank1 */
+      FLASH->CR1 &= (~FLASH_CR_PSIZE);
+    
+      /* Bank1 will be erased, and set voltage range*/
+      FLASH->CR1 |= FLASH_CR_BER | VoltageRange;
+      FLASH->CR1 |= FLASH_CR_START;
+    }
+    if((Banks & FLASH_BANK_2) == FLASH_BANK_2)
+    {
+      /* reset Program/erase VoltageRange for Bank2 */
+      FLASH->CR2 &= (~FLASH_CR_PSIZE);
+    
+      /* Bank2 will be erased, and set voltage range*/
+      FLASH->CR2 |= FLASH_CR_BER | VoltageRange;
+      FLASH->CR2 |= FLASH_CR_START;
+    }
   }
 }
 
@@ -1200,7 +1214,7 @@ static HAL_StatusTypeDef FLASH_OB_BootAddConfig(uint32_t BootOption, uint32_t Bo
       /* Check the parameters */
       assert_param(IS_BOOT_ADDRESS(BootAddress0));
     
-      /* Configure CM7 BOOT ADD0 */
+      /* Configure BOOT ADD0 */
       MODIFY_REG(FLASH->BOOT_PRG, FLASH_BOOT_ADD0, (BootAddress0 >> 16));
     }
 
@@ -1209,7 +1223,7 @@ static HAL_StatusTypeDef FLASH_OB_BootAddConfig(uint32_t BootOption, uint32_t Bo
       /* Check the parameters */
       assert_param(IS_BOOT_ADDRESS(BootAddress1));
     
-      /* Configure CM7 BOOT ADD1 */
+      /* Configure BOOT ADD1 */
       MODIFY_REG(FLASH->BOOT_PRG, FLASH_BOOT_ADD1, BootAddress1 );
     }
 

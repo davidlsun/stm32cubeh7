@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_hal_pcd_ex.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    21-April-2017
+  * @version V1.1.0
+  * @date    31-August-2017
   * @brief   Header file of PCD HAL module.
   ******************************************************************************
   * @attention
@@ -56,8 +56,8 @@
 /* Exported types ------------------------------------------------------------*/
 typedef enum  
 {
-  PCD_LPM_L0_ACTIVE = 0x00, /* on */
-  PCD_LPM_L1_ACTIVE = 0x01, /* LPM L1 sleep */
+  PCD_LPM_L0_ACTIVE = 0x00U, /* on */
+  PCD_LPM_L1_ACTIVE = 0x01U, /* LPM L1 sleep */
 }PCD_LPM_MsgTypeDef;
 
 

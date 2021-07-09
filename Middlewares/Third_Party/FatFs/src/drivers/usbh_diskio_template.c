@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    usbh_diskio_template.c 
   * @author  MCD Application Team
-  * @version V2.0.0
-  * @date    21-April-2017
+  * @version V2.0.1
+  * @date    10-July-2017
   * @brief   USB Host Disk I/O template  driver (without internal DMA).This file
              has to be copied under the appliction porject alongside the
 	     repective header file.

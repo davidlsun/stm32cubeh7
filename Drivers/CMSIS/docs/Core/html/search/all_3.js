@@ -5,6 +5,10 @@ var searchData=
   ['calib',['CALIB',['../structSysTick__Type.html#afcadb0c6d35b21cdc0018658a13942de',1,'SysTick_Type']]],
   ['ccr',['CCR',['../structSCB__Type.html#a2d6653b0b70faac936046a02809b577f',1,'SCB_Type']]],
   ['cfsr',['CFSR',['../structSCB__Type.html#a0cda9e061b42373383418663092ad19a',1,'SCB_Type']]],
+  ['cid0',['CID0',['../structITM__Type.html#a30bb2b166b1723867da4a708935677ba',1,'ITM_Type']]],
+  ['cid1',['CID1',['../structITM__Type.html#ac40df2c3a6cef02f90b4e82c8204756f',1,'ITM_Type']]],
+  ['cid2',['CID2',['../structITM__Type.html#a8000b92e4e528ae7ac4cb8b8d9f6757d',1,'ITM_Type']]],
+  ['cid3',['CID3',['../structITM__Type.html#a43451f43f514108d9eaed5b017f8d921',1,'ITM_Type']]],
   ['claimclr',['CLAIMCLR',['../structTPI__Type.html#a0e10e292cb019a832b03ddd055b2f6ac',1,'TPI_Type']]],
   ['claimset',['CLAIMSET',['../structTPI__Type.html#af8b7d15fa5252b733dd4b11fa1b5730a',1,'TPI_Type']]],
   ['cmsis_5fnvic_5fvirtual',['CMSIS_NVIC_VIRTUAL',['../group__NVIC__gr.html#gadc48b4ed09386aab48fa6b9c96d9034c',1,'Ref_NVIC.txt']]],
@@ -23,7 +27,7 @@ var searchData=
   ['cpicnt',['CPICNT',['../structDWT__Type.html#a2c08096c82abe245c0fa97badc458154',1,'DWT_Type']]],
   ['cpuid',['CPUID',['../structSCB__Type.html#a21e08d546d8b641bee298a459ea73e46',1,'SCB_Type']]],
   ['cspsr',['CSPSR',['../structTPI__Type.html#a8826aa84e5806053395a742d38d59d0f',1,'TPI_Type']]],
-  ['ctrl',['CTRL',['../structSysTick__Type.html#a875e7afa5c4fd43997fb544a4ac6e37e',1,'SysTick_Type::CTRL()'],['../structMPU__Type.html#a4d81d6aa73a9287bafba2bcc5ffc6d18',1,'MPU_Type::CTRL()'],['../structDWT__Type.html#add790c53410023b3b581919bb681fe2a',1,'DWT_Type::CTRL()']]],
+  ['ctrl',['CTRL',['../structSysTick__Type.html#a875e7afa5c4fd43997fb544a4ac6e37e',1,'SysTick_Type::CTRL()'],['../structMPU__Type.html#a769178ef949f0d5d8f18ddbd9e4e926f',1,'MPU_Type::CTRL()'],['../structDWT__Type.html#add790c53410023b3b581919bb681fe2a',1,'DWT_Type::CTRL()']]],
   ['cyccnt',['CYCCNT',['../structDWT__Type.html#a102eaa529d9098242851cb57c52b42d9',1,'DWT_Type']]],
   ['cmsis_2dcore_20device_20templates',['CMSIS-Core Device Templates',['../templates_pg.html',1,'']]]
 ];

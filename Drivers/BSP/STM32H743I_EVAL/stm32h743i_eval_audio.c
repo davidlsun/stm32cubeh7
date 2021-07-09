@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_audio.c
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    31-August-2017
+  * @version V1.2.0
+  * @date    29-December-2017
   * @brief   This file provides the Audio driver for the STM32H743I-EVAL
   *          board.
   @verbatim
@@ -160,6 +160,9 @@
 /** @defgroup STM32H743I_EVAL_AUDIO_Private_Defines AUDIO Private Defines
   * @{
   */
+#if !defined(BSP_USE_CPU_CACHE_MAINTENANCE)
+#define BSP_USE_CPU_CACHE_MAINTENANCE 1
+#endif /* BSP_USE_CPU_CACHE_MAINTENANCE */
 /**
   * @}
   */
@@ -330,14 +333,14 @@ uint8_t BSP_AUDIO_OUT_Init(uint16_t OutputDevice, uint8_t Volume, uint32_t Audio
     ret = AUDIO_ERROR;
   }
 
-#if defined ( __CC_ARM )  /* !< ARM Compiler */  
+#if defined ( __CC_ARM )  /* !< ARM Compiler */
   /* Workaround to fix */
   if(hAudioIn.Interface == AUDIO_IN_INTERFACE_PDM)
   {
     Volume = Volume / 2;
   }
 #endif
-  
+
   if(ret == AUDIO_OK)
   {
     /* Initialize the codec internal registers */
@@ -1747,13 +1750,19 @@ void HAL_DFSDM_FilterRegConvCpltCallback(DFSDM_Filter_HandleTypeDef *hdfsdm_filt
     {
       if(AppBuffTrigger >= hAudioIn.RecSize)
         AppBuffTrigger = 0;
-
+#if (BSP_USE_CPU_CACHE_MAINTENANCE == 1)
+      SCB_InvalidateDCache_by_Addr((uint32_t *)&pScratchBuff[0][ScratchSize/2], ScratchSize/2*4);
+      SCB_InvalidateDCache_by_Addr((uint32_t *)&pScratchBuff[1][ScratchSize/2], ScratchSize/2*4);
+#endif /* BSP_USE_CPU_CACHE_MAINTENANCE */
       for(index = (ScratchSize/2) ; index < ScratchSize; index++)
       {
         hAudioIn.pRecBuf[AppBuffTrigger]     = (uint16_t)(SaturaLH((pScratchBuff[POS_VAL(INPUT_DEVICE_DIGITAL_MIC1)][index] >> 8), -32760, 32760));
         hAudioIn.pRecBuf[AppBuffTrigger + 1] = (uint16_t)(SaturaLH((pScratchBuff[POS_VAL(INPUT_DEVICE_DIGITAL_MIC2)][index] >> 8), -32760, 32760));
         AppBuffTrigger += 2;
       }
+#if (BSP_USE_CPU_CACHE_MAINTENANCE == 1)
+      SCB_CleanDCache_by_Addr((uint32_t *)hAudioIn.pRecBuf,  hAudioIn.RecSize*2);
+#endif /* BSP_USE_CPU_CACHE_MAINTENANCE */
       DmaRecBuffCplt[POS_VAL(INPUT_DEVICE_DIGITAL_MIC2)] = DmaRecBuffCplt[POS_VAL(INPUT_DEVICE_DIGITAL_MIC1)] = 0;
     }
 
@@ -1810,13 +1819,19 @@ void HAL_DFSDM_FilterRegConvHalfCpltCallback(DFSDM_Filter_HandleTypeDef *hdfsdm_
     {
       if(AppBuffTrigger >= hAudioIn.RecSize)
         AppBuffTrigger = 0;
-
+#if (BSP_USE_CPU_CACHE_MAINTENANCE == 1)
+      SCB_InvalidateDCache_by_Addr((uint32_t *)&pScratchBuff[POS_VAL(INPUT_DEVICE_DIGITAL_MIC1)][0], ScratchSize/2*4);
+      SCB_InvalidateDCache_by_Addr((uint32_t *)&pScratchBuff[POS_VAL(INPUT_DEVICE_DIGITAL_MIC2)][0], ScratchSize/2*4);
+#endif /* BSP_USE_CPU_CACHE_MAINTENANCE */
       for(index = 0; index < ScratchSize/2; index++)
       {
         hAudioIn.pRecBuf[AppBuffTrigger]     = (uint16_t)(SaturaLH((pScratchBuff[POS_VAL(INPUT_DEVICE_DIGITAL_MIC1)][index] >> 8), -32760, 32760));
         hAudioIn.pRecBuf[AppBuffTrigger + 1] = (uint16_t)(SaturaLH((pScratchBuff[POS_VAL(INPUT_DEVICE_DIGITAL_MIC2)][index] >> 8), -32760, 32760));
         AppBuffTrigger += 2;
       }
+#if (BSP_USE_CPU_CACHE_MAINTENANCE == 1)
+      SCB_CleanDCache_by_Addr((uint32_t *)hAudioIn.pRecBuf,  hAudioIn.RecSize*2);
+#endif /* BSP_USE_CPU_CACHE_MAINTENANCE */
       DmaRecHalfBuffCplt[POS_VAL(INPUT_DEVICE_DIGITAL_MIC2)] = DmaRecHalfBuffCplt[POS_VAL(INPUT_DEVICE_DIGITAL_MIC1)] = 0;
     }
 

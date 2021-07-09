@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h7xx_nucleo_144.c
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    31-August-2017
+  * @version V1.2.0
+  * @date    29-December-2017
   * @brief   This file provides set of firmware functions to manage:
   *          - LEDs and push-button available on STM32H7XX-Nucleo-144 Kit
   *            from STMicroelectronics
@@ -64,10 +64,10 @@
   */
 
 /**
-  * @brief STM32H7xx NUCLEO BSP Driver version number V1.1.0
+  * @brief STM32H7xx NUCLEO BSP Driver version number V1.2.0
   */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_MAIN   (0x01) /*!< [31:24] main version */
-#define __STM32H7xx_NUCLEO_BSP_VERSION_SUB1   (0x01) /*!< [23:16] sub1 version */
+#define __STM32H7xx_NUCLEO_BSP_VERSION_SUB1   (0x02) /*!< [23:16] sub1 version */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
 #define __STM32H7xx_NUCLEO_BSP_VERSION        ((__STM32H7xx_NUCLEO_BSP_VERSION_MAIN << 24)\
@@ -418,6 +418,7 @@ static void SPIx_Init(void)
     hnucleo_Spi.Init.NSS = SPI_NSS_SOFT;
     hnucleo_Spi.Init.TIMode = SPI_TIMODE_DISABLE;
     hnucleo_Spi.Init.Mode = SPI_MODE_MASTER;
+    hnucleo_Spi.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_ENABLE;  /* Recommanded setting to avoid glitches */
 
     hnucleo_Spi.Init.FifoThreshold = SPI_FIFO_THRESHOLD_01DATA;
     hnucleo_Spi.Init.CRCLength = SPI_CRC_LENGTH_8BIT;

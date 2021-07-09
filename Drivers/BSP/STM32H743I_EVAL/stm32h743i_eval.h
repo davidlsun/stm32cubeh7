@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval.h
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    31-August-2017
+  * @version V1.2.0
+  * @date    29-December-2017
   * @brief   This file contains definitions for STM32H743I_EVAL LEDs,
   *          push-buttons and COM ports hardware resources.
   ******************************************************************************

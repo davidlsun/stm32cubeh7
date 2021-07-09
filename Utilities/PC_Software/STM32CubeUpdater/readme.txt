@@ -1,4 +1,4 @@
-The STM32CubeF7 firmware package comes with an updater utility: STM32CubeUpdater, 
+The STM32CubeH7 firmware package comes with an updater utility: STM32CubeUpdater, 
 also available as a menu within STM32CubeMX code generation tool.
 The updater solution detects new firmware releases and patches available from st.com and 
 proposes to download them to the user’s computer.

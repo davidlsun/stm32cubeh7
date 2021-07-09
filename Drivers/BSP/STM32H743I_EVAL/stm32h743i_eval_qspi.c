@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_qspi.c
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    31-August-2017
+  * @version V1.2.0
+  * @date    29-December-2017
   * @brief   This file includes a standard driver for the MT25TL01G QSPI
   *          memory mounted on STM32H743I-EVAL board.
   @verbatim

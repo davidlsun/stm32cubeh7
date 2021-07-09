@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32h743i_eval_lcd.c
   * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    31-August-2017
+  * @version V1.2.0
+  * @date    29-December-2017
   * @brief   This file includes the driver for Liquid Crystal Display (LCD) module
   *          mounted on STM32H743I-EVAL evaluation board.
   @verbatim

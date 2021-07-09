@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    pdm2pcm_glo.h
   * @author  MCD Application Team
-  * @version V2.5
-  * @date    27-January-2017
+  * @version V3.0.0
+  * @date    28-February-2017
   * @brief   Global header for PDM2PCM conversion code
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Image SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
   * limitations under the License.
   *
   *
-  *******************************************************************************/
+  ******************************************************************************
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __PDM2PCM_FILTER_H

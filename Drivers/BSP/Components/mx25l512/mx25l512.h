@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    mx25l512.h
   * @author  MCD Application Team
-  * @version V0.0.1
-  * @date    24-March-2016
+  * @version V1.0.2
+  * @date    13-December-2016
   * @brief   This file contains all the description of the MX25L51245G QSPI memory.
   ******************************************************************************
   * @attention
@@ -119,7 +119,7 @@
 
 #define QUAD_INOUT_FAST_READ_CMD             0xEB
 #define QUAD_INOUT_FAST_READ_DTR_CMD         0xED  
-#define QPI_READ_4_BYTE_ADDR_CMD             0xEC
+#define QSPI_READ_4_BYTE_ADDR_CMD            0xEC
 
 /* Write Operations */
 #define WRITE_ENABLE_CMD                     0x06
@@ -138,7 +138,7 @@
 
 /* Program Operations */
 #define PAGE_PROG_CMD                        0x02
-#define QPI_PAGE_PROG_4_BYTE_ADDR_CMD        0x12
+#define QSPI_PAGE_PROG_4_BYTE_ADDR_CMD       0x12
 
 #define QUAD_IN_FAST_PROG_CMD                0x38
 #define EXT_QUAD_IN_FAST_PROG_CMD            0x38 
@@ -163,6 +163,10 @@
 /* Quad Operations */
 #define ENTER_QUAD_CMD                       0x35
 #define EXIT_QUAD_CMD                        0xF5
+  
+/* Added for compatibility */ 
+#define QPI_READ_4_BYTE_ADDR_CMD             QSPI_READ_4_BYTE_ADDR_CMD
+#define QPI_PAGE_PROG_4_BYTE_ADDR_CMD        QSPI_PAGE_PROG_4_BYTE_ADDR_CMD
    
 /** 
   * @brief  MX25L512 Registers  
@@ -188,10 +192,10 @@
 #define MX25L512_CR_4BYTE                    ((uint8_t)0x20)    /*!< 3-bytes or 4-bytes addressing */
 #define MX25L512_CR_NB_DUMMY                 ((uint8_t)0xC0)    /*!< Number of dummy clock cycles */
 
-#define MX25L512_MANUFACTURER_ID               ((uint8_t)0xC2)
-#define MX25L512_DEVICE_ID_MEM_TYPE            ((uint8_t)0x20)
-#define MX25L512_DEVICE_ID_MEM_CAPACITY        ((uint8_t)0x1A)
-#define MX25L512_UNIQUE_ID_DATA_LENGTH         ((uint8_t)0x10)  /*JCC: not checked */
+#define MX25L512_MANUFACTURER_ID             ((uint8_t)0xC2)
+#define MX25L512_DEVICE_ID_MEM_TYPE          ((uint8_t)0x20)
+#define MX25L512_DEVICE_ID_MEM_CAPACITY      ((uint8_t)0x1A)
+#define MX25L512_UNIQUE_ID_DATA_LENGTH       ((uint8_t)0x10)  
 
 /**
   * @}

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    adv7533.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    26-August-2016
+  * @version V1.0.1
+  * @date    05-December-2016
   * @brief   This file provides the ADV7533 DSI to HDMI bridge driver 
   ******************************************************************************
   * @attention
@@ -74,18 +74,15 @@ AUDIO_DrvTypeDef adv7533_drv =
   adv7533_AudioInit,
   adv7533_DeInit,
   adv7533_ReadID,
- 
   adv7533_Play,
   adv7533_Pause,
   adv7533_Resume,
   adv7533_Stop,  
-
   adv7533_SetFrequency,
-  0, /* adv7533_SetVolume not supported */
+  adv7533_SetVolume, /* Not supported, added for compatibility */
   adv7533_SetMute,  
-  0, /* adv7533_SetOutputMode not supported */
- 
-  0 /* adv7533_Reset not supported */
+  adv7533_SetOutputMode, /* Not supported, added for compatibility */ 
+  adv7533_Reset /* Not supported, added for compatibility */
 };
 
 /**

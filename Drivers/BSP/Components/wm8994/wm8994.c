@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    wm8994.c
   * @author  MCD Application Team
-  * @version V2.1.0RC2
-  * @date    20-January-2016
+  * @version V2.1.0
+  * @date    22-February-2016
   * @brief   This file provides the WM8994 Audio Codec driver.   
   ******************************************************************************
   * @attention

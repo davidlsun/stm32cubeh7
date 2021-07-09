@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32h7xx_nucleo_144.c
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    29-December-2017
   * @brief   This file provides set of firmware functions to manage:
   *          - LEDs and push-button available on STM32H7XX-Nucleo-144 Kit
   *            from STMicroelectronics
@@ -12,29 +10,13 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
   */
@@ -64,10 +46,10 @@
   */
 
 /**
-  * @brief STM32H7xx NUCLEO BSP Driver version number V1.2.0
+  * @brief STM32H7xx NUCLEO BSP Driver version number V1.3.0
   */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_MAIN   (0x01) /*!< [31:24] main version */
-#define __STM32H7xx_NUCLEO_BSP_VERSION_SUB1   (0x02) /*!< [23:16] sub1 version */
+#define __STM32H7xx_NUCLEO_BSP_VERSION_SUB1   (0x03) /*!< [23:16] sub1 version */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
 #define __STM32H7xx_NUCLEO_BSP_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
 #define __STM32H7xx_NUCLEO_BSP_VERSION        ((__STM32H7xx_NUCLEO_BSP_VERSION_MAIN << 24)\
@@ -360,7 +342,8 @@ static void SPIx_MspInit(SPI_HandleTypeDef *hspi)
   /*** Configure the GPIOs ***/
   /* Enable GPIO clock */
   NUCLEO_SPIx_SCK_GPIO_CLK_ENABLE();
-  NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_ENABLE();
+  NUCLEO_SPIx_MISO_GPIO_CLK_ENABLE();
+  NUCLEO_SPIx_MOSI_GPIO_CLK_ENABLE();
 
   /* Configure SPI SCK */
   GPIO_InitStruct.Pin = NUCLEO_SPIx_SCK_PIN;
@@ -370,15 +353,17 @@ static void SPIx_MspInit(SPI_HandleTypeDef *hspi)
   GPIO_InitStruct.Alternate = NUCLEO_SPIx_SCK_AF;
   HAL_GPIO_Init(NUCLEO_SPIx_SCK_GPIO_PORT, &GPIO_InitStruct);
 
-  /* Configure SPI MISO and MOSI */
-  GPIO_InitStruct.Pin = NUCLEO_SPIx_MOSI_PIN;
-  GPIO_InitStruct.Alternate = NUCLEO_SPIx_MISO_MOSI_AF;
-  GPIO_InitStruct.Pull  = GPIO_NOPULL;
-  HAL_GPIO_Init(NUCLEO_SPIx_MISO_MOSI_GPIO_PORT, &GPIO_InitStruct);
-
+  /* Configure SPI MISO */
   GPIO_InitStruct.Pin = NUCLEO_SPIx_MISO_PIN;
+  GPIO_InitStruct.Alternate = NUCLEO_SPIx_MISO_AF;
   GPIO_InitStruct.Pull  = GPIO_NOPULL;
-  HAL_GPIO_Init(NUCLEO_SPIx_MISO_MOSI_GPIO_PORT, &GPIO_InitStruct);
+  HAL_GPIO_Init(NUCLEO_SPIx_MISO_GPIO_PORT, &GPIO_InitStruct);
+
+  /* Configure SPI MOSI */
+  GPIO_InitStruct.Pin = NUCLEO_SPIx_MOSI_PIN;
+  GPIO_InitStruct.Alternate = NUCLEO_SPIx_MOSI_AF;
+  GPIO_InitStruct.Pull  = GPIO_NOPULL;
+  HAL_GPIO_Init(NUCLEO_SPIx_MOSI_GPIO_PORT, &GPIO_InitStruct);
 
   SPI_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_SPI123;
   SPI_PeriphClkInit.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
@@ -665,7 +650,7 @@ void LCD_IO_WriteData(uint8_t Data)
 */
 void LCD_IO_WriteMultipleData(uint8_t *pData, uint32_t Size)
 {
-  uint32_t counter = 0;
+  uint32_t counter, size_align;
   __IO uint32_t data = 0;
 
   /* Reset LCD control line CS */
@@ -682,6 +667,15 @@ void LCD_IO_WriteMultipleData(uint8_t *pData, uint32_t Size)
   }
   else
   {
+    if((Size % 2) == 0)
+    {
+      size_align = Size;
+    }
+    else
+    {
+      size_align = Size - 1;
+    }
+    counter = size_align;
 
     /* Enable SPI peripheral */
     __HAL_SPI_ENABLE(&hnucleo_Spi);
@@ -694,13 +688,13 @@ void LCD_IO_WriteMultipleData(uint8_t *pData, uint32_t Size)
 
     /* Several data should be sent in a raw */
     /* Direct SPI accesses for optimization */
-    for (counter = Size; counter != 0; counter--)
+    do
     {
       while(((hnucleo_Spi.Instance->SR) & SPI_FLAG_TXE) != SPI_FLAG_TXE)
       {
       }
       /* Need to invert bytes for LCD*/
-      *((__IO uint8_t*)&hnucleo_Spi.Instance->TXDR) = *(pData+1);
+      *((__IO uint8_t*)&hnucleo_Spi.Instance->TXDR) = *(pData + 1);
 
       /* Wait until the bus is ready before releasing Chip select */
       while(((hnucleo_Spi.Instance->SR) & SPI_SR_TXC) == RESET)
@@ -725,8 +719,13 @@ void LCD_IO_WriteMultipleData(uint8_t *pData, uint32_t Size)
       data = *(&hnucleo_Spi.Instance->RXDR);
       UNUSED(data);  /* Remove GNU warning */
 
-      counter--;
+      counter-=2;
       pData += 2;
+    }while(counter != 0);
+
+    if(size_align != Size)
+    {
+      SPIx_Write(*pData);
     }
 
     /* Clear TXTF Flag : Tx FIFO Threshold */
@@ -740,12 +739,11 @@ void LCD_IO_WriteMultipleData(uint8_t *pData, uint32_t Size)
   LCD_CS_HIGH();
 
   /* add delay after each SPI command to avoid saturating the Adafruit LCD controller
-     mandatory as the STM32H743I CPU (CM7) is running at 400 MHz */
+  mandatory as the STM32H7xx CPU (CM7) is running at 400 MHz */
   for (counter = 256; counter != 0; counter--)
   {
     __NOP();
   }
-
 }
 
 /**
@@ -783,13 +781,14 @@ static void ADCx_MspInit(ADC_HandleTypeDef *hadc)
   HAL_GPIO_Init(NUCLEO_ADCx_GPIO_PORT, &GPIO_InitStruct);
 
   /* ADC clock configuration */
-  /* PLL2_VCO Input = HSE_VALUE/PLL3M = 8/4  = 2 Mhz */
-  /* PLL2_VCO Output = PLL2_VCO Input * PLL2N = 400 Mhz */
-  /* ADC Clock = PLL2_VCO Output/PLL2P = 400/6 = 66,6 Mhz */
+  /* PLL2_VCO Input = HSE_VALUE/PLL2M = 8/4  = 2 Mhz */
+  /* PLL2_VCO Output = PLL2_VCO Input * PLL2N = 360 Mhz */
+  /* ADC Clock = PLL2_VCO Output/PLL2P = 360/10 = 36 Mhz */
   periph_clk_init_struct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
   periph_clk_init_struct.PLL2.PLL2M = 4;
-  periph_clk_init_struct.PLL2.PLL2N = 200;
-  periph_clk_init_struct.PLL2.PLL2P = 6;
+  periph_clk_init_struct.PLL2.PLL2N = 180;
+  periph_clk_init_struct.PLL2.PLL2FRACN = 0;
+  periph_clk_init_struct.PLL2.PLL2P = 10;
   periph_clk_init_struct.PLL2.PLL2Q = 2;
   periph_clk_init_struct.PLL2.PLL2R = 2;
   HAL_RCCEx_PeriphCLKConfig(&periph_clk_init_struct);
@@ -832,14 +831,17 @@ static void ADCx_Init(void)
   if(HAL_ADC_GetState(&hnucleo_Adc) == HAL_ADC_STATE_RESET)
   {
     /* ADC Config */
-    hnucleo_Adc.Instance                   = NUCLEO_ADCx;
-    hnucleo_Adc.Init.ClockPrescaler        = ADC_CLOCKPRESCALER_PCLK_DIV4;
-    hnucleo_Adc.Init.Resolution            = ADC_RESOLUTION_12B;
-    hnucleo_Adc.Init.ContinuousConvMode    = DISABLE;
-    hnucleo_Adc.Init.DiscontinuousConvMode = DISABLE;
-    hnucleo_Adc.Init.ExternalTrigConvEdge  = ADC_EXTERNALTRIGCONVEDGE_NONE;
-    hnucleo_Adc.Init.EOCSelection          = ADC_EOC_SINGLE_CONV;
-    hnucleo_Adc.Init.NbrOfConversion       = 1;
+
+    hnucleo_Adc.Init.ClockPrescaler        = ADC_CLOCK_ASYNC_DIV1;          /* Asynchronous clock mode, input ADC clock not divided */
+    hnucleo_Adc.Init.Resolution            = ADC_RESOLUTION_12B;            /* 12-bit resolution for converted data */
+    hnucleo_Adc.Init.ScanConvMode          = DISABLE;                       /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
+    hnucleo_Adc.Init.EOCSelection          = ADC_EOC_SINGLE_CONV;           /* EOC flag picked-up to indicate conversion end */
+    hnucleo_Adc.Init.ContinuousConvMode    = DISABLE;                       /* Continuous mode disabled to have only 1 conversion at each conversion trig */
+    hnucleo_Adc.Init.NbrOfConversion       = 1;                             /* Parameter discarded because sequencer is disabled */
+    hnucleo_Adc.Init.DiscontinuousConvMode = DISABLE;                       /* Parameter discarded because sequencer is disabled */
+    hnucleo_Adc.Init.NbrOfDiscConversion   = 0;                             /* Parameter discarded because sequencer is disabled */
+    hnucleo_Adc.Init.ExternalTrigConv      = ADC_EXTERNALTRIG_T1_CC1;       /* Software start to trig the 1st conversion manually, without external event */
+    hnucleo_Adc.Init.ExternalTrigConvEdge  = ADC_EXTERNALTRIGCONVEDGE_NONE; /* Parameter discarded because software trigger chosen */
 
     ADCx_MspInit(&hnucleo_Adc);
     HAL_ADC_Init(&hnucleo_Adc);
@@ -878,10 +880,15 @@ uint8_t BSP_JOY_Init(void)
 
   ADCx_Init();
 
-  /* Select the ADC Channel to be converted */
-  sConfig.Channel      = NUCLEO_ADCx_CHANNEL;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-  sConfig.Rank         = 1;
+  /* Configure ADC regular channel */
+  sConfig.Channel      = NUCLEO_ADCx_CHANNEL;         /* Sampled channel number */
+  sConfig.Rank         = ADC_REGULAR_RANK_1;          /* Rank of sampled channel number ADCx_CHANNEL */
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;    /* Sampling time (number of clock cycles unit) */
+  sConfig.Offset       = 0;                           /* Parameter discarded because offset correction is disabled */
+  sConfig.SingleDiff   = ADC_SINGLE_ENDED;            /* Single-ended input channel */
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;             /* No offset subtraction */
+
+
   status = HAL_ADC_ConfigChannel(&hnucleo_Adc, &sConfig);
 
   /* Return Joystick initialization status */
@@ -945,7 +952,7 @@ JOYState_TypeDef BSP_JOY_GetState(void)
   {
     state = JOY_UP;
   }
-  else if((keyconvertedvalue > 3400) && (keyconvertedvalue < 3750))
+  else if((keyconvertedvalue > 3400) && (keyconvertedvalue < 3790))
   {
     state = JOY_LEFT;
   }

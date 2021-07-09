@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32h7xx_nucleo_144.h
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    29-December-2017
   * @brief   This file contains definitions for:
   *          - LEDs and push-button available on STM32H7xx-Nucleo-144 Kit
   *            from STMicroelectronics
@@ -12,29 +10,13 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
   */
@@ -67,6 +49,17 @@
 /** @defgroup STM32H7xx_NUCLEO_144_Exported_Types Exported Types
   * @{
   */
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1363) || defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+typedef enum
+{
+  LED1 = 0,
+  LED_GREEN = LED1,
+  LED2 = 1,
+  LED_YELLOW = LED2,
+  LED3 = 2,
+  LED_RED = LED3
+}Led_TypeDef;
+#else
 typedef enum
 {
   LED1 = 0,
@@ -76,6 +69,7 @@ typedef enum
   LED3 = 2,
   LED_RED = LED3
 }Led_TypeDef;
+#endif /* USE_STM32H7XX_NUCLEO_144_MB1363 */
 
 typedef enum
 {
@@ -111,8 +105,8 @@ typedef enum
 /**
   * @brief Define for STM32H7xx_NUCLEO_144 board
   */
-#if !defined (USE_STM32H7xx_NUCLEO_144)
- #define USE_STM32H7xx_NUCLEO_144
+#if !defined (USE_STM32H7XX_NUCLEO_144) && !defined (USE_STM32H7XX_NUCLEO_144_MB1363) && !defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+ #define USE_STM32H7XX_NUCLEO_144
 #endif
 
 /** @defgroup STM32H7xx_NUCLEO_144_LED NUCLEO_144 LED
@@ -124,21 +118,34 @@ typedef enum
 #define LED1_GPIO_PORT                          GPIOB
 #define LED1_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOB_CLK_ENABLE()
 #define LED1_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOB_CLK_DISABLE()
-
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1363) || defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+#define LED2_PIN                                GPIO_PIN_1
+#define LED2_GPIO_PORT                          GPIOE
+#define LED2_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOE_CLK_ENABLE()
+#define LED2_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOE_CLK_DISABLE()
+#else
 #define LED2_PIN                                GPIO_PIN_7
 #define LED2_GPIO_PORT                          GPIOB
 #define LED2_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOB_CLK_ENABLE()
 #define LED2_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOB_CLK_DISABLE()
+#endif /* USE_STM32H7XX_NUCLEO_144_MB1363 */
 
 #define LED3_PIN                                GPIO_PIN_14
 #define LED3_GPIO_PORT                          GPIOB
 #define LED3_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOB_CLK_ENABLE()
 #define LED3_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOB_CLK_DISABLE()
 
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1363) || defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+#define LEDx_GPIO_CLK_ENABLE(__INDEX__)   do { if((__INDEX__) == 1) {__HAL_RCC_GPIOE_CLK_ENABLE();} else\
+                                                                    {__HAL_RCC_GPIOB_CLK_ENABLE();   }} while(0)
+#define LEDx_GPIO_CLK_DISABLE(__INDEX__)  do { if((__INDEX__) == 1) {__HAL_RCC_GPIOE_CLK_DISABLE();} else\
+                                                                    {__HAL_RCC_GPIOB_CLK_DISABLE();   }} while(0)
+#else
 #define LEDx_GPIO_CLK_ENABLE(__INDEX__)   do { if((__INDEX__) == 0) {__HAL_RCC_GPIOB_CLK_ENABLE();} else\
                                                                     {__HAL_RCC_GPIOB_CLK_ENABLE();   }} while(0)
 #define LEDx_GPIO_CLK_DISABLE(__INDEX__)  do { if((__INDEX__) == 0) {__HAL_RCC_GPIOB_CLK_DISABLE();} else\
                                                                     {__HAL_RCC_GPIOB_CLK_DISABLE();   }} while(0)
+#endif /* USE_STM32H7XX_NUCLEO_144_MB1363 */
 /**
   * @}
   */
@@ -182,9 +189,15 @@ typedef enum
 #define OTG_FS1_OVER_CURRENT_PORT                 GPIOG
 #define OTG_FS1_OVER_CURRENT_PORT_CLK_ENABLE()     __HAL_RCC_GPIOG_CLK_ENABLE()
 
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1363) || defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+#define OTG_FS1_POWER_SWITCH_PIN                  GPIO_PIN_10
+#define OTG_FS1_POWER_SWITCH_PORT                 GPIOD
+#define OTG_FS1_POWER_SWITCH_PORT_CLK_ENABLE()     __HAL_RCC_GPIOD_CLK_ENABLE()
+#else
 #define OTG_FS1_POWER_SWITCH_PIN                  GPIO_PIN_6
 #define OTG_FS1_POWER_SWITCH_PORT                 GPIOG
 #define OTG_FS1_POWER_SWITCH_PORT_CLK_ENABLE()     __HAL_RCC_GPIOG_CLK_ENABLE()
+#endif  /*USE_STM32H7XX_NUCLEO_144_MB1363*/
 /**
   * @}
   */
@@ -204,12 +217,38 @@ typedef enum
 #define NUCLEO_SPIx_SCK_GPIO_CLK_ENABLE()               __HAL_RCC_GPIOA_CLK_ENABLE()
 #define NUCLEO_SPIx_SCK_GPIO_CLK_DISABLE()              __HAL_RCC_GPIOA_CLK_DISABLE()
 
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1363) || defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+#define NUCLEO_SPIx_MISO_AF                        GPIO_AF5_SPI1
+#define NUCLEO_SPIx_MISO_GPIO_PORT                 GPIOA
+#define NUCLEO_SPIx_MISO_GPIO_CLK_ENABLE()         __HAL_RCC_GPIOA_CLK_ENABLE()
+#define NUCLEO_SPIx_MISO_GPIO_CLK_DISABLE()        __HAL_RCC_GPIOA_CLK_DISABLE()
+#define NUCLEO_SPIx_MISO_PIN                       GPIO_PIN_6
+
+#define NUCLEO_SPIx_MOSI_AF                        GPIO_AF5_SPI1
+#define NUCLEO_SPIx_MOSI_GPIO_PORT                 GPIOB
+#define NUCLEO_SPIx_MOSI_GPIO_CLK_ENABLE()         __HAL_RCC_GPIOB_CLK_ENABLE()
+#define NUCLEO_SPIx_MOSI_GPIO_CLK_DISABLE()        __HAL_RCC_GPIOB_CLK_DISABLE()
+#define NUCLEO_SPIx_MOSI_PIN                       GPIO_PIN_5
+
+#else
 #define NUCLEO_SPIx_MISO_MOSI_AF                        GPIO_AF5_SPI1
 #define NUCLEO_SPIx_MISO_MOSI_GPIO_PORT                 GPIOA
 #define NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_ENABLE()         __HAL_RCC_GPIOA_CLK_ENABLE()
 #define NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_DISABLE()        __HAL_RCC_GPIOA_CLK_DISABLE()
 #define NUCLEO_SPIx_MISO_PIN                            GPIO_PIN_6
 #define NUCLEO_SPIx_MOSI_PIN                            GPIO_PIN_7
+
+#define NUCLEO_SPIx_MISO_AF                        NUCLEO_SPIx_MISO_MOSI_AF
+#define NUCLEO_SPIx_MISO_GPIO_PORT                 NUCLEO_SPIx_MISO_MOSI_GPIO_PORT
+#define NUCLEO_SPIx_MISO_GPIO_CLK_ENABLE()         NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_ENABLE()
+#define NUCLEO_SPIx_MISO_GPIO_CLK_DISABLE()        NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_DISABLE()
+
+#define NUCLEO_SPIx_MOSI_AF                        NUCLEO_SPIx_MISO_MOSI_AF
+#define NUCLEO_SPIx_MOSI_GPIO_PORT                 NUCLEO_SPIx_MISO_MOSI_GPIO_PORT
+#define NUCLEO_SPIx_MOSI_GPIO_CLK_ENABLE()         NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_ENABLE()
+#define NUCLEO_SPIx_MOSI_GPIO_CLK_DISABLE()        NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_DISABLE()
+#endif /* USE_STM32H7XX_NUCLEO_144_MB1363 */
+
 /* Maximum Timeout values for flags waiting loops. These timeouts are not based
    on accurate values, they just guarantee that the application will not remain
    stuck if the SPI communication is corrupted.
@@ -243,9 +282,15 @@ typedef enum
   * @brief  SD Control Interface pins (shield D4)
   */
 #define SD_CS_PIN                                 GPIO_PIN_14
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1363) || defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+#define SD_CS_GPIO_PORT                           GPIOE
+#define SD_CS_GPIO_CLK_ENABLE()                 __HAL_RCC_GPIOE_CLK_ENABLE()
+#define SD_CS_GPIO_CLK_DISABLE()                __HAL_RCC_GPIOE_CLK_DISABLE()
+#else
 #define SD_CS_GPIO_PORT                           GPIOF
 #define SD_CS_GPIO_CLK_ENABLE()                 __HAL_RCC_GPIOF_CLK_ENABLE()
 #define SD_CS_GPIO_CLK_DISABLE()                __HAL_RCC_GPIOF_CLK_DISABLE()
+#endif /* USE_STM32H7XX_NUCLEO_144_MB1363*/
 
 /**
   * @brief  LCD Control Interface pins (shield D10)
@@ -258,14 +303,26 @@ typedef enum
 /**
   * @brief  LCD Data/Command Interface pins (shield D8)
   */
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+#define LCD_DC_PIN                                 GPIO_PIN_3
+#define LCD_DC_GPIO_PORT                           GPIOF
+#define LCD_DC_GPIO_CLK_ENABLE()                 __HAL_RCC_GPIOF_CLK_ENABLE()
+#define LCD_DC_GPIO_CLK_DISABLE()                __HAL_RCC_GPIOF_CLK_DISABLE()
+#elif defined (USE_STM32H7XX_NUCLEO_144_MB1363)
+#define LCD_DC_PIN                                 GPIO_PIN_9
+#define LCD_DC_GPIO_PORT                           GPIOG
+#define LCD_DC_GPIO_CLK_ENABLE()                 __HAL_RCC_GPIOG_CLK_ENABLE()
+#define LCD_DC_GPIO_CLK_DISABLE()                __HAL_RCC_GPIOG_CLK_DISABLE()
+#else
 #define LCD_DC_PIN                                 GPIO_PIN_12
 #define LCD_DC_GPIO_PORT                           GPIOF
 #define LCD_DC_GPIO_CLK_ENABLE()                 __HAL_RCC_GPIOF_CLK_ENABLE()
 #define LCD_DC_GPIO_CLK_DISABLE()                __HAL_RCC_GPIOF_CLK_DISABLE()
+#endif /* USE_STM32H7XX_NUCLEO_144_MB1363 */
 
 #endif /* HAL_SPI_MODULE_ENABLED */
 
-/*################################ ADC3 ######################################*/
+/*################################ ADC ######################################*/
 /**
   * @brief  ADC Interface pins
   *         used to detect motion of Joystick available on Adafruit 1.8" TFT shield
@@ -273,6 +330,18 @@ typedef enum
 
 #ifdef HAL_ADC_MODULE_ENABLED
 
+#if defined (USE_STM32H7XX_NUCLEO_144_MB1363) || defined (USE_STM32H7XX_NUCLEO_144_MB1364)
+#define NUCLEO_ADCx                        ADC1
+#define NUCLEO_ADCx_CLK_ENABLE()         __HAL_RCC_ADC12_CLK_ENABLE()
+#define NUCLEO_ADCx_CLK_DISABLE()        __HAL_RCC_ADC12_CLK_DISABLE()
+
+#define NUCLEO_ADCx_CHANNEL                ADC_CHANNEL_5
+
+#define NUCLEO_ADCx_GPIO_PORT              GPIOB
+#define NUCLEO_ADCx_GPIO_PIN               GPIO_PIN_1
+#define NUCLEO_ADCx_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOB_CLK_ENABLE()
+#define NUCLEO_ADCx_GPIO_CLK_DISABLE()   __HAL_RCC_GPIOB_CLK_DISABLE()
+#else
 #define NUCLEO_ADCx                        ADC3
 #define NUCLEO_ADCx_CLK_ENABLE()         __HAL_RCC_ADC3_CLK_ENABLE()
 #define NUCLEO_ADCx_CLK_DISABLE()        __HAL_RCC_ADC3_CLK_DISABLE()
@@ -283,6 +352,7 @@ typedef enum
 #define NUCLEO_ADCx_GPIO_PIN               GPIO_PIN_3
 #define NUCLEO_ADCx_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOF_CLK_ENABLE()
 #define NUCLEO_ADCx_GPIO_CLK_DISABLE()   __HAL_RCC_GPIOF_CLK_DISABLE()
+#endif /* USE_STM32H7XX_NUCLEO_144_MB1363 */
 
 #endif /* HAL_ADC_MODULE_ENABLED */
 

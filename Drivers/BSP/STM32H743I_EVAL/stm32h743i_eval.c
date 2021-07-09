@@ -2,11 +2,9 @@
   ******************************************************************************
   * @file    stm32h743i_eval.c
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    29-December-2017
   * @brief   This file provides a set of firmware functions to manage LEDs,
   *          push-buttons and COM ports available on STM32H743I-EVAL
-  *          evaluation board(MB1219) from STMicroelectronics.
+  *          evaluation board(MB1246) from STMicroelectronics.
   *
   @verbatim
             This driver requires the stm32h743i_eval_io.c/.h files to manage the
@@ -18,29 +16,13 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
   */
@@ -74,10 +56,10 @@
   * @{
   */
 /**
- * @brief STM32H743I EVAL BSP Driver version number V1.2.0
+ * @brief STM32H743I EVAL BSP Driver version number V1.3.0
    */
 #define __STM32H743I_EVAL_BSP_VERSION_MAIN   (0x01) /*!< [31:24] main version */
-#define __STM32H743I_EVAL_BSP_VERSION_SUB1   (0x02) /*!< [23:16] sub1 version */
+#define __STM32H743I_EVAL_BSP_VERSION_SUB1   (0x03) /*!< [23:16] sub1 version */
 #define __STM32H743I_EVAL_BSP_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version */
 #define __STM32H743I_EVAL_BSP_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
 #define __STM32H743I_EVAL_BSP_VERSION         ((__STM32H743I_EVAL_BSP_VERSION_MAIN << 24)\
@@ -139,6 +121,10 @@ const uint16_t COM_RX_AF[COMn] = {EVAL_COM1_RX_AF};
 
 static I2C_HandleTypeDef heval_I2c;
 static ADC_HandleTypeDef heval_ADC;
+
+#if defined(BSP_USE_CMSIS_OS)
+static osSemaphoreId BspI2cSemaphore = 0;
+#endif
 
 /**
   * @}
@@ -207,6 +193,15 @@ void OTM8009A_IO_Delay(uint32_t Delay);
 /** @addtogroup STM32H743I_EVAL_LOW_LEVEL_Exported_Functions
   * @{
   */
+
+/**
+  * @brief  BSP Error Notification
+  * @note   Defined as a weak function to be overwritten by the application.
+  * @retval None
+  */
+__weak void BSP_ErrorNotify(void)
+{
+}
 
   /**
   * @brief  This method returns the STM32H743I EVAL BSP Driver revision
@@ -587,19 +582,20 @@ void BSP_POTENTIOMETER_Init(void)
     /* ADC an GPIO Periph clock enable */
     ADCx_CLK_ENABLE();
     ADCx_CHANNEL_GPIO_CLK_ENABLE();
-
+    /* ADC Periph interface clock configuration */
+    __HAL_RCC_ADC_CONFIG(RCC_ADCCLKSOURCE_CLKP);
     /* ADC Channel GPIO pin configuration */
     GPIO_InitStruct.Pin = ADCx_CHANNEL_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(ADCx_CHANNEL_GPIO_PORT, &GPIO_InitStruct);
-
+    
     /* Configure the ADC peripheral */
     heval_ADC.Instance          = ADCx;
 
     HAL_ADC_DeInit(&heval_ADC);
 
-    heval_ADC.Init.ClockPrescaler        = ADC_CLOCKPRESCALER_PCLK_DIV4;  /* Asynchronous clock mode, input ADC clock not divided */
+    heval_ADC.Init.ClockPrescaler        = ADC_CLOCK_ASYNC_DIV2;          /* Asynchronous clock mode, input ADC clock divided by 2 */
     heval_ADC.Init.Resolution            = ADC_RESOLUTION_12B;            /* 12-bit resolution for converted data */
     heval_ADC.Init.ScanConvMode          = DISABLE;                       /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
     heval_ADC.Init.EOCSelection          = ADC_EOC_SINGLE_CONV;           /* EOC flag picked-up to indicate conversion end */
@@ -614,9 +610,11 @@ void BSP_POTENTIOMETER_Init(void)
 
     /* Configure ADC regular channel */
     ADC_Config.Channel      = ADCx_CHANNEL;                /* Sampled channel number */
-    ADC_Config.Rank         = 1;                           /* Rank of sampled channel number ADCx_CHANNEL */
+    ADC_Config.Rank         = ADC_REGULAR_RANK_1;          /* Rank of sampled channel number ADCx_CHANNEL */
     ADC_Config.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;    /* Sampling time (number of clock cycles unit) */
     ADC_Config.Offset = 0;                                 /* Parameter discarded because offset correction is disabled */
+    ADC_Config.SingleDiff   = ADC_SINGLE_ENDED;            /* Single-ended input channel */
+    ADC_Config.OffsetNumber = ADC_OFFSET_NONE;             /* No offset subtraction */
 
     HAL_ADC_ConfigChannel(&heval_ADC, &ADC_Config);
 }
@@ -828,6 +826,15 @@ static void I2Cx_Init(void)
 {
   if(HAL_I2C_GetState(&heval_I2c) == HAL_I2C_STATE_RESET)
   {
+#if defined(BSP_USE_CMSIS_OS)
+    if(BspI2cSemaphore == NULL)
+    {
+      /* Create semaphore to prevent multiple I2C access */
+      osSemaphoreDef(BSP_I2C_SEM);
+      BspI2cSemaphore = osSemaphoreCreate(osSemaphore(BSP_I2C_SEM), 1);
+    }
+#endif
+
     heval_I2c.Instance              = EVAL_I2Cx;
     heval_I2c.Init.Timing           = EVAL_I2Cx_TIMING;
     heval_I2c.Init.OwnAddress1      = 0x72;
@@ -855,7 +862,17 @@ static void I2Cx_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
 {
   HAL_StatusTypeDef status = HAL_OK;
 
+#if defined(BSP_USE_CMSIS_OS)
+  /* Get semaphore to prevent multiple I2C access */
+  osSemaphoreWait(BspI2cSemaphore, osWaitForever);
+#endif
+
   status = HAL_I2C_Mem_Write(&heval_I2c, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, &Value, 1, 100);
+
+#if defined(BSP_USE_CMSIS_OS)
+  /* Release semaphore to prevent multiple I2C access */
+  osSemaphoreRelease(BspI2cSemaphore);
+#endif
 
   /* Check the communication status */
   if(status != HAL_OK)
@@ -876,7 +893,17 @@ static uint8_t I2Cx_Read(uint8_t Addr, uint8_t Reg)
   HAL_StatusTypeDef status = HAL_OK;
   uint8_t Value = 0;
 
+#if defined(BSP_USE_CMSIS_OS)
+  /* Get semaphore to prevent multiple I2C access */
+  osSemaphoreWait(BspI2cSemaphore, osWaitForever);
+#endif
+
   status = HAL_I2C_Mem_Read(&heval_I2c, Addr, Reg, I2C_MEMADD_SIZE_8BIT, &Value, 1, 1000);
+
+#if defined(BSP_USE_CMSIS_OS)
+  /* Release semaphore to prevent multiple I2C access */
+  osSemaphoreRelease(BspI2cSemaphore);
+#endif
 
   /* Check the communication status */
   if(status != HAL_OK)
@@ -900,14 +927,17 @@ static HAL_StatusTypeDef I2Cx_ReadMultiple(uint8_t Addr, uint16_t Reg, uint16_t 
 {
   HAL_StatusTypeDef status = HAL_OK;
 
-  if(Addr == EXC7200_I2C_ADDRESS)
-  {
-    status = HAL_I2C_Master_Receive(&heval_I2c, Addr, Buffer, Length, 1000);
-  }
-  else
-  {
+#if defined(BSP_USE_CMSIS_OS)
+  /* Get semaphore to prevent multiple I2C access */
+  osSemaphoreWait(BspI2cSemaphore, osWaitForever);
+#endif
+
     status = HAL_I2C_Mem_Read(&heval_I2c, Addr, (uint16_t)Reg, MemAddress, Buffer, Length, 1000);
-  }
+
+#if defined(BSP_USE_CMSIS_OS)
+  /* Release semaphore to prevent multiple I2C access */
+  osSemaphoreRelease(BspI2cSemaphore);
+#endif
 
   /* Check the communication status */
   if(status != HAL_OK)
@@ -931,7 +961,17 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg, uint16_t
 {
   HAL_StatusTypeDef status = HAL_OK;
 
+#if defined(BSP_USE_CMSIS_OS)
+  /* Get semaphore to prevent multiple I2C access */
+  osSemaphoreWait(BspI2cSemaphore, osWaitForever);
+#endif
+
   status = HAL_I2C_Mem_Write(&heval_I2c, Addr, (uint16_t)Reg, MemAddress, Buffer, Length, 1000);
+
+#if defined(BSP_USE_CMSIS_OS)
+  /* Release semaphore to prevent multiple I2C access */
+  osSemaphoreRelease(BspI2cSemaphore);
+#endif
 
   /* Check the communication status */
   if(status != HAL_OK)
@@ -951,7 +991,21 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg, uint16_t
   */
 static HAL_StatusTypeDef I2Cx_IsDeviceReady(uint16_t DevAddress, uint32_t Trials)
 {
-  return (HAL_I2C_IsDeviceReady(&heval_I2c, DevAddress, Trials, 1000));
+  HAL_StatusTypeDef status = HAL_OK;
+
+#if defined(BSP_USE_CMSIS_OS)
+  /* Get semaphore to prevent multiple I2C access */
+  osSemaphoreWait(BspI2cSemaphore, osWaitForever);
+#endif
+
+  status = HAL_I2C_IsDeviceReady(&heval_I2c, DevAddress, Trials, 1000);
+
+#if defined(BSP_USE_CMSIS_OS)
+  /* Release semaphore to prevent multiple I2C access */
+  osSemaphoreRelease(BspI2cSemaphore);
+#endif
+
+  return status;
 }
 
 /**
@@ -961,11 +1015,18 @@ static HAL_StatusTypeDef I2Cx_IsDeviceReady(uint16_t DevAddress, uint32_t Trials
   */
 static void I2Cx_Error(uint8_t Addr)
 {
-  /* De-initialize the I2C comunication bus */
+  BSP_ErrorNotify();
+
+  /* De-initialize the I2C communication bus */
   HAL_I2C_DeInit(&heval_I2c);
 
   /* Re-Initialize the I2C communication bus */
   I2Cx_Init();
+
+#if defined(BSP_USE_CMSIS_OS)
+  /* Release semaphore to prevent multiple I2C access */
+  osSemaphoreRelease(BspI2cSemaphore);
+#endif
 }
 
 /*******************************************************************************

@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    stm32h743i_eval_sd.c
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    29-December-2017
   * @brief   This file includes the uSD card driver mounted on STM32H743I-EVAL
   *          evaluation boards.
   @verbatim
@@ -49,29 +47,13 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
   */
@@ -145,7 +127,16 @@ uint8_t BSP_SD_Init(void)
   /* uSD device interface configuration */
   uSdHandle.Instance = SDMMC1;
 
-  uSdHandle.Init.ClockDiv            = 1;
+  /* if CLKDIV = 0 then SDMMC Clock frequency = SDMMC Kernel Clock
+     else SDMMC Clock frequency = SDMMC Kernel Clock / [2 * CLKDIV].
+  */
+#if ! defined (BSP_SD_HIGH_PERFORMANCE_CONFIG)
+  uSdHandle.Init.ClockDiv            = 4;
+#else
+  /* Code for high performance */
+  uSdHandle.Init.ClockDiv            = 2;
+#endif /* BSP_SD_HIGH_PERFORMANCE_CONFIG  */
+
   uSdHandle.Init.ClockPowerSave      = SDMMC_CLOCK_POWER_SAVE_DISABLE;
   uSdHandle.Init.ClockEdge           = SDMMC_CLOCK_EDGE_RISING;
   uSdHandle.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
@@ -350,7 +341,7 @@ uint8_t BSP_SD_Erase(uint32_t StartAddr, uint32_t EndAddr)
 /**
   * @brief  Initializes the SD MSP.
   * @param  hsd: SD handle
-  * @param  Params: Pointer to void   
+  * @param  Params: Pointer to void
   * @retval None
   */
 __weak void BSP_SD_MspInit(SD_HandleTypeDef *hsd, void *Params)
@@ -407,7 +398,7 @@ __weak void BSP_SD_MspInit(SD_HandleTypeDef *hsd, void *Params)
 /**
   * @brief  DeInitializes the SD MSP.
   * @param  hsd: SD handle
-  * @param  Params: Pointer to void   
+  * @param  Params: Pointer to void
   * @retval None
   */
 __weak void BSP_SD_MspDeInit(SD_HandleTypeDef *hsd, void *Params)
@@ -548,7 +539,7 @@ void HAL_SD_ErrorCallback(SD_HandleTypeDef *hsd)
 {
   BSP_SD_ErrorCallback();
 }
-  
+
 /**
   * @brief  Enable the SD Transceiver 1.8V Mode Callback.
   */
@@ -556,7 +547,7 @@ void HAL_SD_DriveTransciver_1_8V_Callback(FlagStatus status)
 {
     BSP_SD_DriveTransciver_1_8V_Callback(status);
 }
-  
+
 /**
   * @}
   */

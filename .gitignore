@@ -2,7 +2,5 @@
 # list to keep a record of what wasn't put into source control
 /Drivers/CMSIS/Lib/ARM/
 /Drivers/CMSIS/Lib/IAR/
-/Middlewares/ST/STemWin/
-/Middlewares/ST/TouchGFX/
 /Projects/
 /Utilities/Media/Video/
